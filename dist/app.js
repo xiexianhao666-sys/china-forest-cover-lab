@@ -8,9 +8,33 @@ const shortName=id=>name(id).replace(/特别行政区|自治区|维吾尔|壮族
 const value=(id,y)=>id==='all'?D.national(ids,y):D.rate(id,y);
 const signed=n=>(n>=0?'+':'')+n.toFixed(2);
 function color(v,change=false){
- const palette=change?[[178,87,45],[247,247,247],[33,102,172]]:[[68,1,84],[59,82,139],[33,145,140],[94,201,98],[253,231,37]];
+ const palette=change?[[178,87,45],[247,247,247],[33,102,172]]:[[253,231,37],[94,201,98],[33,145,140],[59,82,139],[68,1,84]];
  const t=change?Math.max(0,Math.min(1,(v+16)/32)):Math.max(0,Math.min(1,v/100)),p=t*(palette.length-1),i=Math.min(palette.length-2,Math.floor(p)),f=p-i;
  return 'rgb('+palette[i].map((a,j)=>Math.round(a+(palette[i+1][j]-a)*f)).join(',')+')';
+}
+const reducedMotion=window.matchMedia('(prefers-reduced-motion: reduce)'),numberFrames=new Map();
+function animateNumber(id,target,unit,withSign=false){
+ const el=$(id);cancelAnimationFrame(numberFrames.get(id));
+ const from=Number(el.dataset.current??target),start=performance.now();
+ const paint=n=>{el.dataset.current=n;el.innerHTML=(withSign?signed(n):n.toFixed(2))+'<em>'+unit+'</em>'};
+ if(reducedMotion.matches||from===target){paint(target);return}
+ const frame=now=>{const t=Math.min(1,(now-start)/650);paint(from+(target-from)*(1-Math.pow(1-t,3)));if(t<1)numberFrames.set(id,requestAnimationFrame(frame));else numberFrames.delete(id)};
+ numberFrames.set(id,requestAnimationFrame(frame));
+}
+// Retain SVG nodes to interpolate presentation changes without changing annual data.
+function updateSVG(id,markup){
+ const host=$(id),template=document.createElement('template');template.innerHTML=markup;
+ const next=template.content.firstElementChild;
+ if(!host.firstElementChild){host.append(next);return}
+ function sync(old,fresh){
+  if(old.nodeType!==fresh.nodeType||old.nodeName!==fresh.nodeName){old.replaceWith(fresh.cloneNode(true));return}
+  if(old.nodeType!==1){if(old.nodeValue!==fresh.nodeValue)old.nodeValue=fresh.nodeValue;return}
+  for(const attr of [...old.attributes])if(!fresh.hasAttribute(attr.name))old.removeAttribute(attr.name);
+  for(const attr of fresh.attributes)if(old.getAttribute(attr.name)!==attr.value)old.setAttribute(attr.name,attr.value);
+  const a=[...old.childNodes],b=[...fresh.childNodes];
+  for(let i=0;i<Math.max(a.length,b.length);i++){if(!a[i])old.append(b[i].cloneNode(true));else if(!b[i])a[i].remove();else sync(a[i],b[i])}
+ }
+ sync(host.firstElementChild,next);
 }
 function project(p){return [(p[0]-72)*10,(55-p[1])*12]}
 function path(g){const polys=g.type==='MultiPolygon'?g.coordinates:[g.coordinates];return polys.map(poly=>poly.map(r=>r.map((p,i)=>(i?'L':'M')+project(p).map(n=>n.toFixed(1)).join(',')).join('')+'Z').join('')).join('')}
@@ -44,7 +68,7 @@ function trend(){
  for(const y of [...new Set([state.start,state.end])])s+='<circle cx="'+x(y)+'" cy="'+z(value(state.region,y))+'" r="4" fill="#fff" stroke="#245b7d" stroke-width="1.6"/>';
  s+='<text x="'+Math.min(x(state.end),W-49)+'" y="'+(z(value(state.region,state.end))-10)+'" font-size="11" fill="#245b7d">'+value(state.region,state.end).toFixed(2)+'%</text>';
  s+='<line x1="'+L+'" x2="'+(W-R)+'" y1="'+(H-B)+'" y2="'+(H-B)+'" stroke="#9eabb5"/><text x="'+L+'" y="14" font-size="10" fill="#506471">覆盖比例（%）</text><text x="185" y="240" font-size="10" text-anchor="middle" fill="#74838d">年份 · 合成演示</text>';
- $('trend').innerHTML='<svg id="trendSVG" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="'+name(state.region)+'年度趋势（合成演示）" font-family="Microsoft YaHei, sans-serif"><title>'+name(state.region)+' · 合成演示，非实际数据</title><rect width="'+W+'" height="'+H+'" fill="white"/>'+s+'</svg>';
+ updateSVG('trend','<svg id="trendSVG" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="'+name(state.region)+'年度趋势（合成演示）" font-family="Microsoft YaHei, sans-serif"><title>'+name(state.region)+' · 合成演示，非实际数据</title><rect width="'+W+'" height="'+H+'" fill="white"/>'+s+'</svg>');
 }
 function rankings(){
  const arr=ids.map(id=>({id,v:D.change(id,state.start,state.end,ids)})).sort((a,b)=>state.sort==='desc'?b.v-a.v:a.v-b.v).slice(0,8);
@@ -58,19 +82,19 @@ function rankings(){
  document.querySelectorAll('.rank-row').forEach(el=>{el.onclick=()=>selectRegion(el.dataset.id);el.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();selectRegion(el.dataset.id)}}});
 }
 function render(){
- $('start').value=state.start;$('end').value=state.end;$('yearSlider').min=state.start;$('yearSlider').value=state.end;$('sliderYear').textContent=state.end;$('sliderStart').textContent=state.start;
+ $('start').value=state.start;$('end').value=state.end;$('yearSlider').min=state.start;$('yearSlider').value=state.end;$('sliderYear').textContent=state.end;$('sliderStart').textContent=state.start;$('yearSlider').style.setProperty('--progress',((state.end-state.start)/Math.max(1,2025-state.start)*100)+'%');
  [...$('end').options].forEach(o=>o.disabled=Number(o.value)<state.start);
- $('regionTitle').textContent=name(state.region);$('rate').innerHTML=value(state.region,state.end).toFixed(2)+'<em>%</em>';
- $('delta').innerHTML=signed(D.change(state.region,state.start,state.end,ids))+'<em>个百分点</em>';$('deltaNote').textContent=state.start+'—'+state.end+' · 合成演示';
+ $('regionTitle').textContent=name(state.region);animateNumber('rate',value(state.region,state.end),'%');
+ animateNumber('delta',D.change(state.region,state.start,state.end,ids),'个百分点',true);$('deltaNote').textContent=state.start+'—'+state.end+' · 合成演示';
  $('mapTitle').textContent=state.mode==='rate'?state.end+'年森林覆盖比例':state.start+'—'+state.end+'年森林覆盖变化';
  $('mapSubtitle').textContent='省级概览 · '+(state.mode==='rate'?'覆盖比例（%）':'变化（百分点）')+' · 合成演示';
  $('trendSubtitle').textContent=name(state.region)+' · 1990—2025';$('rankingPeriod').textContent=state.start+'—'+state.end+'年';
- $('map').innerHTML=mapSVG(state.end);
+ updateSVG('map',mapSVG(state.end));
  $('mapLegend').innerHTML=state.mode==='rate'?'覆盖比例（%）<div class="legend-scale"></div><div class="legend-ticks"><span>0</span><span>25</span><span>50</span><span>75</span><span>100</span></div>':'变化（百分点）<div class="legend-scale" style="background:linear-gradient(90deg,#b2572d,#f7f7f7,#2166ac)"></div><div class="legend-ticks"><span>−16</span><span>−8</span><span>0</span><span>+8</span><span>+16</span></div>';
  for(const [id,mode] of [['rateMode','rate'],['changeMode','change']]){$(id).classList.toggle('selected',state.mode===mode);$(id).setAttribute('aria-pressed',String(state.mode===mode))}
- $('compareStart').textContent=state.start+'年';$('compareEnd').textContent=state.end+'年';$('miniStart').innerHTML=mapSVG(state.start,true);$('miniEnd').innerHTML=mapSVG(state.end,true);bindMap();trend();rankings();
+ $('compareStart').textContent=state.start+'年';$('compareEnd').textContent=state.end+'年';updateSVG('miniStart',mapSVG(state.start,true));updateSVG('miniEnd',mapSVG(state.end,true));bindMap();trend();rankings();
 }
-function stop(){clearInterval(timer);timer=null;$('playBtn').textContent='▶';$('playBtn').setAttribute('aria-label','播放年份')}
+function stop(){$('playbackPanel').classList.remove('is-playing');clearInterval(timer);timer=null;$('playBtn').textContent='▶';$('playBtn').setAttribute('aria-label','播放年份')}
 function setEnd(y){state.end=y;render()}
 function setDock(visible){$('analysisDock').hidden=!visible;$('overview').classList.toggle('dock-hidden',!visible);$('dockToggle').textContent=visible?'收起分析面板':'展开分析面板';$('dockToggle').setAttribute('aria-expanded',String(visible))}
 function reset(){stop();Object.assign(state,{region:'all',start:2000,end:2025,mode:'rate',sort:'desc'});$('region').value='all';$('sort').value='desc';setDock(true);$('trendPanel').open=true;$('rankingPanel').open=false;$('comparison').open=false;render()}
@@ -81,7 +105,7 @@ function init(){
  $('end').onchange=e=>{stop();setEnd(+e.target.value)};$('yearSlider').oninput=e=>{stop();setEnd(+e.target.value)};$('sort').onchange=e=>{state.sort=e.target.value;rankings()};
  $('rateMode').onclick=()=>{state.mode='rate';render()};$('changeMode').onclick=()=>{state.mode='change';render()};$('resetBtn').onclick=reset;
  $('dockToggle').onclick=()=>setDock($('analysisDock').hidden);
- $('playBtn').onclick=()=>{if(timer){stop();return}if(state.end>=2025)state.end=state.start;render();$('playBtn').textContent='Ⅱ';$('playBtn').setAttribute('aria-label','暂停播放');timer=setInterval(()=>{if(state.end>=2025){stop();return}setEnd(state.end+1)},850)};
+ $('playBtn').onclick=()=>{if(timer){stop();return}if(state.end>=2025)state.end=state.start;render();$('playbackPanel').classList.add('is-playing');$('playBtn').textContent='Ⅱ';$('playBtn').setAttribute('aria-label','暂停播放');timer=setInterval(()=>{if(state.end>=2025){stop();return}setEnd(state.end+1)},850)};
  $('sourceBtn').onclick=()=>$('sourceDialog').showModal();$('closeDialog').onclick=()=>$('sourceDialog').close();
  $('sourceDialog').onclick=e=>{const r=$('sourceDialog').getBoundingClientRect();if(e.target===$('sourceDialog')&&(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom))$('sourceDialog').close()};
  $('exportBtn').onclick=exportCSV;$('chartExport').onclick=()=>download($('trendSVG').outerHTML,'image/svg+xml','合成示例_'+name(state.region)+'_趋势图.svg');render();
