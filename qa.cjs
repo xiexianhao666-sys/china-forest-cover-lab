@@ -14,7 +14,7 @@ const send=(method,params={})=>new Promise((resolve,reject)=>{const id=++count;p
 const evaluate=async expression=>{const r=await send('Runtime.evaluate',{expression,returnByValue:true,awaitPromise:true});if(r.exceptionDetails)throw Error(JSON.stringify(r.exceptionDetails));return r.result.value};
 try{
 await send('Runtime.enable');await send('Page.enable');await send('Emulation.setDeviceMetricsOverride',{width:1894,height:1244,deviceScaleFactor:1,mobile:false});
-await send('Page.navigate',{url:'file:///'+path.resolve('dist/index.html').replaceAll('\\','/')});
+await send('Page.navigate',{url:'file:///'+path.resolve('dist/index.html').replaceAll('\\','/')+'?demo=1'});
 await delay(900);
 assert.equal(await evaluate("document.querySelectorAll('#map .province').length"),34);
 assert.equal(await evaluate("document.querySelectorAll('.rank-row').length"),8);
@@ -67,6 +67,21 @@ await evaluate("document.getElementById('resetBtn').click()");
 await send('Emulation.setDeviceMetricsOverride',{width:390,height:844,deviceScaleFactor:1,mobile:true});await delay(200);
 assert.equal(await evaluate('document.documentElement.scrollWidth<=window.innerWidth'),true,'Mobile horizontal overflow');
 const mobile=await send('Page.captureScreenshot',{format:'png',captureBeyondViewport:true});fs.writeFileSync('qa-mobile.png',Buffer.from(mobile.data,'base64'));
-assert.deepEqual(errors,[]);console.log('PASS: linked province/year/mode, keyboard plot selection, collapsible overlays, dock controls, playback, exports, desktop screen fit, mobile width, no browser errors.');
+await send('Emulation.setDeviceMetricsOverride',{width:1894,height:1244,deviceScaleFactor:1,mobile:false});
+await send('Page.navigate',{url:'file:///'+path.resolve('dist/index.html').replaceAll('\\','/')});await delay(800);
+assert.equal(await evaluate("document.getElementById('rate').textContent"),'—');
+assert.equal(await evaluate("document.getElementById('exportBtn').disabled"),true);
+assert.match(await evaluate("document.getElementById('apiProducts').textContent"),/MCD12Q1.061/);
+assert.equal(await evaluate("document.querySelectorAll('#map [role=button]').length"),0);
+assert.match(await evaluate("document.getElementById('trend').textContent"),/尚未取得全国统计/);
+await send('Network.enable');await send('Network.setBlockedURLs',{urls:['*appeears.earthdatacloud.nasa.gov*']});
+await evaluate("document.getElementById('refreshAPI').click()");await delay(500);
+assert.match(await evaluate("document.getElementById('apiStatus').textContent"),/实时查询未成功/);
+await evaluate("document.getElementById('sourceBtn').click();document.getElementById('closeApiDialog').click()");
+const apiShot=await send('Page.captureScreenshot',{format:'png',captureBeyondViewport:true});fs.writeFileSync('qa-desktop.png',Buffer.from(apiShot.data,'base64'));
+await send('Emulation.setDeviceMetricsOverride',{width:390,height:844,deviceScaleFactor:1,mobile:true});await delay(200);
+assert.equal(await evaluate('document.documentElement.scrollWidth<=window.innerWidth'),true);
+const apiMobile=await send('Page.captureScreenshot',{format:'png',captureBeyondViewport:true});fs.writeFileSync('qa-mobile.png',Buffer.from(apiMobile.data,'base64'));
+assert.deepEqual(errors,[]);console.log('PASS: demo regressions; real mode contains no synthetic metrics, task/export controls disabled, authentic catalogue snapshot shown, network failure explicit, desktop/mobile layout.');
 }finally{await send('Browser.close').catch(()=>{});ws.close()}
 })().catch(e=>{console.error(e.message);browser.kill();process.exitCode=1});
