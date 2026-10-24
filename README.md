@@ -17,6 +17,8 @@
 - ?demo=1：合成样品，明确标注非真实值。
 - ?mode=pending：检查待接入界面，不触发账户请求。
 
+没有Node时可用零依赖启动器（仅标准库）：双击 `tools/start-windows.bat`，或运行 `python tools\launcher.py`。默认打开真实数据快照，支持 `--demo`、`--pending`、`--port`、`--root`、`--no-browser`、`--self-test`；可选打成内嵌 `dist/` 的单文件exe，见 tools/README.md。
+
 ## 测试与持续集成
 
     pnpm exec playwright install chromium
