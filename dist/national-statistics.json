@@ -127,14 +127,50 @@
     }
   ],
   "pipeline": {
-    "checked_at": "2026-10-24T02:41:20.306602+00:00",
+    "checked_at": "2026-10-24T02:55:58.871113+00:00",
     "task_id": "dba4e581-9acf-43cc-9140-3d06fb764ce2",
     "task_name": "China_MCD12Q1_061_2001_2024",
-    "task_status": "queued",
+    "task_status": "processing",
     "year": 2001,
     "end_year": 2024,
     "authentication_verified": true,
-    "statistics_status": "pending"
+    "statistics_status": "pending",
+    "progress": {
+      "details": [
+        {
+          "desc": "Initializing",
+          "step": 1,
+          "pct_complete": 100
+        },
+        {
+          "desc": "Downloading",
+          "step": 2,
+          "pct_complete": 62
+        },
+        {
+          "desc": "Subsetting",
+          "step": 3,
+          "pct_complete": 0
+        },
+        {
+          "desc": "Generating Files",
+          "step": 4,
+          "pct_complete": 0
+        },
+        {
+          "desc": "Extracting Stats",
+          "step": 5,
+          "pct_complete": 0
+        },
+        {
+          "desc": "Finalizing",
+          "step": 6,
+          "pct_complete": 0
+        }
+      ],
+      "summary": 26,
+      "user_consider_limit": true
+    }
   },
   "boundary": {
     "source_sha256": "3a00467a0db9b4136facb5f2f3d0edbfd96adb15651cfdf63991da9281030e85",

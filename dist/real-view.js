@@ -30,6 +30,11 @@ if(new URLSearchParams(location.search).get('demo')!=='1' && window.FOREST_REAL_
  const p=data.pipeline,complete=p.statistics_status==='exploratory_estimate';
  const taskText=complete?'已完成':({queued:'排队中',processing:'处理中',done:'提取完成，统计待完成'}[p.task_status]||p.task_status);
  document.querySelector('.api-details .panel-note').textContent='认证提取：已验证；已生成 '+rows.length+' 个年度。'+p.year+'—'+(p.end_year||p.year)+'任务：'+taskText+'。任务状态快照：'+new Date(p.checked_at).toLocaleString('zh-CN')+'。';
+ if(Number.isFinite(p.progress?.summary)&&!complete){
+  const progress=document.createElement('p');progress.textContent='服务端整体进度 '+p.progress.summary+'%（上述时间的快照）';
+  const bar=document.createElement('progress');bar.max=100;bar.value=p.progress.summary;bar.setAttribute('aria-label','历史任务处理进度快照');bar.style.width='100%';
+  document.querySelector('.api-details .panel-content').append(progress,bar);
+ }
  document.querySelector('footer').innerHTML='<span>MCD12Q1.061 · LC_Type1 + QC · 已生成 '+rows.length+' 个年度</span><span>发布快照 · 原生等面积统计 · 不作真实增减判定</span>';
  const refresh=$('refreshAPI').onclick;
  $('apiStatus').textContent=rows.length+' 个真实年度已生成；'+(complete?'提取统计完成':'历史任务'+taskText);
