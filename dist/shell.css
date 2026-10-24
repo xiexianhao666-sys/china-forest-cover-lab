@@ -790,8 +790,11 @@ svg text,
 }
 
 /* 密钥状态栏出现时压缩工作区高度，保持单屏不滚动 */
+.workspace {
+  height: calc(100dvh - 261px);
+}
 main.auth-shown .workspace {
-  height: calc(100dvh - 262px);
+  height: calc(100dvh - 311px);
 }
 #authHost[hidden] {
   display: none;
