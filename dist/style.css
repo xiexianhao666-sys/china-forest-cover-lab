@@ -27,3 +27,4 @@
 @media(max-width:1150px){.playback-panel{width:302px}}
 @media(max-width:800px){.playback-panel{position:relative;inset:auto;width:auto;margin:0 14px 8px;order:3}.analysis-dock{max-height:none;order:4}.map-footnote{order:5}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+.real-legend{display:flex;gap:14px;flex-wrap:wrap;font-size:11px}.real-legend span{display:flex;align-items:center;gap:5px}.real-legend i{display:inline-block;width:18px;height:10px;border:1px solid #b9c4cc}.real-raster{pointer-events:none}

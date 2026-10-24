@@ -69,11 +69,14 @@ assert.equal(await evaluate('document.documentElement.scrollWidth<=window.innerW
 const mobile=await send('Page.captureScreenshot',{format:'png',captureBeyondViewport:true});fs.writeFileSync('qa-mobile.png',Buffer.from(mobile.data,'base64'));
 await send('Emulation.setDeviceMetricsOverride',{width:1894,height:1244,deviceScaleFactor:1,mobile:false});
 await send('Page.navigate',{url:'file:///'+path.resolve('dist/index.html').replaceAll('\\','/')});await delay(800);
-assert.equal(await evaluate("document.getElementById('rate').textContent"),'—');
-assert.equal(await evaluate("document.getElementById('exportBtn').disabled"),true);
+assert.match(await evaluate("document.getElementById('rate').textContent"),/12\.35/);
+assert.equal(await evaluate("document.getElementById('exportBtn').disabled"),false);
 assert.match(await evaluate("document.getElementById('apiProducts').textContent"),/MCD12Q1.061/);
 assert.equal(await evaluate("document.querySelectorAll('#map [role=button]').length"),0);
-assert.match(await evaluate("document.getElementById('trend').textContent"),/尚未取得全国统计/);
+assert.match(await evaluate("document.getElementById('trend').textContent"),/森林类占比/);
+assert.equal(await evaluate("document.querySelectorAll('#map image.real-raster').length"),1);
+assert.equal(await evaluate("document.querySelector('#map image.real-raster').getAttribute('href')"),'forest-2025.png');
+assert.match(await evaluate("document.querySelector('.api-details .panel-note').textContent"),/已验证/);
 await send('Network.enable');await send('Network.setBlockedURLs',{urls:['*appeears.earthdatacloud.nasa.gov*']});
 await evaluate("document.getElementById('refreshAPI').click()");await delay(500);
 assert.match(await evaluate("document.getElementById('apiStatus').textContent"),/实时查询未成功/);
@@ -82,6 +85,6 @@ const apiShot=await send('Page.captureScreenshot',{format:'png',captureBeyondVie
 await send('Emulation.setDeviceMetricsOverride',{width:390,height:844,deviceScaleFactor:1,mobile:true});await delay(200);
 assert.equal(await evaluate('document.documentElement.scrollWidth<=window.innerWidth'),true);
 const apiMobile=await send('Page.captureScreenshot',{format:'png',captureBeyondViewport:true});fs.writeFileSync('qa-mobile.png',Buffer.from(apiMobile.data,'base64'));
-assert.deepEqual(errors,[]);console.log('PASS: demo regressions; real mode contains no synthetic metrics, task/export controls disabled, authentic catalogue snapshot shown, network failure explicit, desktop/mobile layout.');
+assert.deepEqual(errors,[]);console.log('PASS: demo regressions; real national estimate and raster shown, export enabled, authentic catalogue snapshot, network failure explicit, desktop/mobile layout.');
 }finally{await send('Browser.close').catch(()=>{});ws.close()}
 })().catch(e=>{console.error(e.message);browser.kill();process.exitCode=1});
