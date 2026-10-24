@@ -62,6 +62,14 @@ class StatisticsTests(unittest.TestCase):
         self.assertEqual(result["boundary_pixel_area_km2"], 2)
         self.assertEqual(result["forest_share_of_valid_land_pct"], 100)
 
+    def test_region_in_later_block_retains_exact_pixel_centres(self):
+        values = np.full((520, 520), 16, dtype='uint8')
+        values[0:2, 513:515] = 1
+        self.fixture(values, box(513001, 518001, 514999, 519999))
+        result = summarize(self.lc, self.boundary, 2020)
+        self.assertEqual(result['pixel_counts']['boundary'], 4)
+        self.assertEqual(result['pixel_counts']['forest'], 4)
+
     def test_hole_excluded_from_denominator(self):
         outer = box(1, 1, 2999, 2999)
         polygon = Polygon(outer.exterior.coords, [box(1001, 1001, 1999, 1999).exterior.coords])

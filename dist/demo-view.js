@@ -1,3 +1,4 @@
+import { mountComposition, drawComposition } from "./composition.js";
 import "./data-core.js";
 import { $, reducedMotion, updateSVG, setDock, download } from "./ui.js";
 import {
@@ -450,7 +451,14 @@ export function mountDemo(ctx) {
       };
     });
   }
+  mountComposition();
   function render() {
+    $("compositionSubtitle").textContent =
+      state.end + "年 · " + name(state.region) + " · 合成演示";
+    drawComposition(
+      value(state.region, state.end),
+      state.end + "年 · 合成演示",
+    );
     $("start").value = state.start;
     $("end").value = state.end;
     $("yearSlider").min = state.start;

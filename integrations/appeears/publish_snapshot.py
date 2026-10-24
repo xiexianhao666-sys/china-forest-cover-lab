@@ -38,7 +38,13 @@ def export(site):
         records.append(result)
     status = json.loads((ROOT / 'runtime' / 'pipeline-status.json').read_text(encoding='utf-8'))
     provenance = json.loads((ROOT / 'boundaries' / 'provenance.json').read_text(encoding='utf-8'))
-    payload = {'records': records, 'pipeline': status, 'boundary': provenance,
+    regions = {}
+    for file in sorted((ROOT / 'runtime' / 'regions').glob('*.json')):
+        result = json.loads(file.read_text(encoding='utf-8'))
+        result['sources'] = {key: value for key, value in result['sources'].items() if not key.endswith('_path')}
+        row = regions.setdefault(result['region_id'], {'region_id': result['region_id'], 'name_zh': result['name_zh'], 'records': []})
+        row['records'].append(result)
+    payload = {'records': records, 'regions': list(regions.values()), 'pipeline': status, 'boundary': provenance,
                'preview': {'bounds': [72, 15, 137, 55], 'method': 'nearest neighbour', 'purpose': 'display only; areas calculated from native full resolution'}}
     (dest / 'real-data.js').write_text('window.FOREST_REAL_DATA=' + json.dumps(payload, ensure_ascii=False) + ';\n', encoding='utf-8')
     (dest / 'national-statistics.json').write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding='utf-8')

@@ -137,8 +137,16 @@ export function prepareDataLayout() {
   $("dockToggle").disabled = false;
   $("chartExport").hidden = true;
   document.querySelector(".plot-caption").hidden = true;
-  $("rankingPanel").hidden = true;
-  $("comparison").hidden = true;
+  $("rankingPanel").hidden = false;
+  $("comparison").hidden = false;
+  $("ranking").innerHTML = '<p class="api-empty">省级两期统计待完成。</p>';
+  $("miniStart").innerHTML = '<p class="api-empty">起始年度待加载</p>';
+  $("miniEnd").innerHTML = '<p class="api-empty">结束年度待加载</p>';
+  document.querySelector("#rankingPanel .panel-note").textContent =
+    "缺少数据时保留功能入口，不使用演示值替代。";
+  document.querySelector("#comparison .panel-note").textContent =
+    "真实栅格完成后开放两期对比。";
+  document.querySelector(".compare-legend").textContent = "等待真实分类图层";
   $("regionTitle").textContent = "全国";
   $("rate").textContent = "—";
   $("delta").textContent = "—";

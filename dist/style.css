@@ -1086,10 +1086,43 @@ input:disabled {
 .share-pie {
   display: block;
   width: 100%;
-  max-height: 330px;
+  max-height: 220px;
+}
+#compositionPanel summary {
+  background: #deeee5;
+  color: #164f38;
+  border-left-color: #20704e;
+}
+.real-ranking {
+  max-height: 390px;
+  overflow-y: auto;
+}
+.real-rank-row {
+  display: grid;
+  grid-template-columns: 100px 1fr 48px;
+  width: 100%;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 3px;
+  border: 0;
+  border-bottom: 1px solid #e2e8ec;
+  text-align: left;
+  font-size: 11px;
+}
+.rank-track {
+  height: 8px;
+  background: #eef2f4;
+}
+.rank-track i {
+  display: block;
+  height: 100%;
+}
+.real-rank-row b {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
 }
 .share-pie path {
-  transform-origin: 160px 108px;
+  transform-origin: 160px 75px;
   animation: pie-reveal 0.5s ease-out;
 }
 @keyframes pie-reveal {
@@ -1106,4 +1139,8 @@ input:disabled {
   .share-pie path {
     animation: none;
   }
+}
+
+#trend > svg {
+  max-height: 190px;
 }

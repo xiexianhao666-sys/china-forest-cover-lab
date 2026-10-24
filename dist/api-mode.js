@@ -1,3 +1,4 @@
+import { mountComposition, drawComposition } from "./composition.js";
 import { $, prepareDataLayout } from "./ui.js";
 import { boundaryMap } from "./map.js";
 import { mountCatalog } from "./catalog.js";
@@ -6,6 +7,8 @@ export function mountPending(ctx, metadata) {
   document.querySelector("h1").textContent = "中国全国森林资源查询";
   document.querySelector(".edition").textContent = "AppEEARS · 接入中";
   prepareDataLayout();
+  mountComposition();
+  drawComposition(null, "待数据完成");
   $("region").innerHTML = "<option>中国 · 全国汇总</option>";
   for (const id of ["start", "end"])
     $(id).innerHTML = "<option>待确认</option>";
@@ -22,8 +25,8 @@ export function mountPending(ctx, metadata) {
     '<div class="api-empty"><strong>尚未取得全国统计</strong><p>公开产品接口已接入。账户认证、全国区域提取与面积汇总完成后，才能生成年度曲线。</p></div>';
   $("chartExport").hidden = true;
   document.querySelector(".plot-caption").hidden = true;
-  $("rankingPanel").hidden = true;
-  $("comparison").hidden = true;
+  $("rankingPanel").hidden = false;
+  $("comparison").hidden = false;
   $("sliderStart").textContent = "—";
   $("sliderYear").textContent = "—";
   document.querySelector(".playback-panel p").textContent =

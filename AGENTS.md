@@ -8,3 +8,5 @@
 - Sites publication is separate from GitHub. Use the Sites skill and native publishing workflow; supply the verified checkout content as a one-way publication input. Never develop in the publication checkout or copy its old files back here.
 - Never commit credentials, .secrets, .env, .venv, raw raster downloads or runtime caches. Preserve source boundary bytes and hashes; normalize labels using the explicit registry.
 - If authentication or publication fails, retain the local commit and report which destination is incomplete. Do not claim a push or deployment succeeded without evidence.
+
+- Preserve all existing user-facing features. Composition is additive: never replace or hide annual trend, regional comparison, or two-period maps; show explicit unavailable states where real data are missing.

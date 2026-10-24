@@ -1,3 +1,5 @@
+import { mountComposition, drawComposition } from "./composition.js";
+import { mountAnalysis } from "./real-analysis.js";
 import { $, reducedMotion, download, prepareDataLayout } from "./ui.js";
 import { boundaryMap } from "./map.js";
 import { mountCatalog } from "./catalog.js";
@@ -9,6 +11,34 @@ export function mountReal(ctx, data, metadata) {
   $("map").innerHTML = boundaryMap();
   document.querySelector(".api-details").open = false;
   $("analysisDock").prepend($("trendPanel"));
+  mountComposition();
+  $("analysisDock").append(document.querySelector(".api-details"));
+  let region = "all",
+    baseline = 0,
+    mode = "rate";
+  const regions = data.regions || [];
+  const regionRows = () =>
+    region === "all"
+      ? rows
+      : regions.find((r) => r.region_id === region).records;
+  const regionName = () =>
+    region === "all"
+      ? "全国"
+      : regions.find((r) => r.region_id === region).name_zh;
+  const analysis = mountAnalysis(
+    ctx,
+    data,
+    () => ({
+      region,
+      baseline: rows[baseline].year,
+      year: rows[selected].year,
+      mode,
+    }),
+    (id) => {
+      region = id;
+      renderReal();
+    },
+  );
   let selected = rows.length - 1,
     play = null;
   document.title = "中国森林类面积 · AppEEARS实测产品";
@@ -16,22 +46,37 @@ export function mountReal(ctx, data, metadata) {
   document.querySelector(".edition").textContent =
     "遥感分类统计 · 非官方森林覆盖率";
   document.querySelector(".data-notice strong").textContent = "真实产品";
-  $("region").innerHTML = "<option>中国 · 研究范围汇总</option>";
-  $("start").innerHTML = "<option>" + rows[0].year + "</option>";
+  $("region").innerHTML =
+    '<option value="all">中国 · 研究范围汇总</option>' +
+    regions
+      .map((r) => `<option value="${r.region_id}">${r.name_zh}</option>`)
+      .join("");
+  $("region").disabled = !regions.length;
+  $("start").innerHTML = rows
+    .map((r) => `<option value="${r.year}">${r.year}</option>`)
+    .join("");
+  $("start").disabled = rows.length < 2;
   $("end").innerHTML = rows
     .map((r) => '<option value="' + r.year + '">' + r.year + "</option>")
     .join("");
   $("end").disabled = rows.length < 2;
   $("rateMode").textContent = "森林类分布";
-  $("changeMode").hidden = true;
+  $("changeMode").hidden = false;
+  $("rateMode").disabled = false;
+  $("changeMode").disabled = !regions.length || rows.length < 2;
+  $("changeMode").title = "省级分类占比差（百分点），非真实森林增减";
   $("resetBtn").disabled = false;
   const metricLabels = document.querySelectorAll(".map-annotation div > span");
   metricLabels[0].textContent = "森林类占比";
   metricLabels[1].textContent = "有效数据覆盖";
+  const periodMetric = document.createElement("div");
+  periodMetric.innerHTML =
+    '<span>期间分类占比差</span><b id="periodDelta">—</b>';
+  $("deltaNote").before(periodMetric);
   $("rate").removeAttribute("data-current");
   $("delta").removeAttribute("data-current");
   document.querySelector("#trendPanel summary").firstChild.textContent =
-    "森林类面积构成";
+    "年度趋势";
   document.querySelector(".playback-heading span").textContent = "真实年度";
   document.querySelector(".playback-panel p").textContent =
     "仅播放已完成年度；过渡不生成新观测";
@@ -99,38 +144,38 @@ export function mountReal(ctx, data, metadata) {
   $("chartExport").hidden = false;
   $("chartExport").disabled = false;
   $("chartExport").onclick = () =>
-    download($("trend").innerHTML, "image/svg+xml", "森林类面积构成.svg");
-  function drawTrend() {
-    const r = rows[selected];
-    const share = r.forest_share_of_valid_classified_area_pct;
-    $("chartExport").disabled = !Number.isFinite(share);
-    $("chartExport").title = "导出面积构成饼图";
-    if (!Number.isFinite(share)) {
-      $("trend").innerHTML =
-        '<p class="api-empty">有效数据不足，暂不展示面积构成。</p>';
-      return;
-    }
-    const angle = (share / 100) * Math.PI * 2;
-    const x = 160 + 91 * Math.sin(angle);
-    const y = 108 - 91 * Math.cos(angle);
-    const sector =
-      share === 100
-        ? '<circle cx="160" cy="108" r="91" fill="#20704e"/>'
-        : share === 0
-          ? ""
-          : `<path d="M160 108 L160 17 A91 91 0 ${share > 50 ? 1 : 0} 1 ${x} ${y} Z" fill="#20704e" stroke="white" stroke-width="2"><title>森林类 ${share.toFixed(2)}%</title></path>`;
-    $("trend").innerHTML =
-      `<svg class="share-pie" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 296" role="img" aria-label="${r.year}年森林类占比 ${share.toFixed(2)}%，其他有效分类 ${(100 - share).toFixed(2)}%">
-      <circle cx="160" cy="108" r="91" fill="#d8e2e8"><title>其他有效分类（含水体） ${(100 - share).toFixed(2)}%</title></circle>${sector}
-      <g font-family="Microsoft YaHei, sans-serif" font-size="13" fill="#263746">
-        <rect x="14" y="221" width="12" height="12" fill="#20704e"/><text x="34" y="232">森林类（1—5类）</text><text x="306" y="232" text-anchor="end" font-weight="700">${share.toFixed(2)}%</text>
-        <rect x="14" y="249" width="12" height="12" fill="#d8e2e8" stroke="#8a9da9"/><text x="34" y="260">其他有效分类（含水体）</text><text x="306" y="260" text-anchor="end">${(100 - share).toFixed(2)}%</text>
-        <text x="160" y="288" text-anchor="middle" font-size="11" fill="#526575">分母：通过质量筛选的有效分类面积</text>
-      </g></svg>`;
-  }
+    download($("trend").innerHTML, "image/svg+xml", "年度分类占比.svg");
   function renderReal() {
-    const r = rows[selected];
+    const r = regionRows().find((r) => r.year === rows[selected].year) || {
+      year: rows[selected].year,
+      forest_share_of_valid_classified_area_pct: null,
+      valid_classified_area_fraction: null,
+      forest_area_km2: null,
+    };
+    $("region").value = region;
+    $("regionTitle").textContent = regionName();
+    const before = regionRows().find(
+      (row) => row.year === rows[baseline].year,
+    )?.forest_share_of_valid_classified_area_pct;
+    if (
+      selected !== baseline &&
+      Number.isFinite(before) &&
+      Number.isFinite(r.forest_share_of_valid_classified_area_pct)
+    )
+      animateNumber(
+        "periodDelta",
+        r.forest_share_of_valid_classified_area_pct - before,
+        "个百分点",
+        true,
+      );
+    else $("periodDelta").textContent = "—";
+    $("start").value = rows[baseline].year;
+    $("sliderStart").textContent = rows[baseline].year;
+    [...$("end").options].forEach(
+      (o) => (o.disabled = Number(o.value) < rows[baseline].year),
+    );
     $("end").value = r.year;
+    $("yearSlider").min = baseline;
     $("yearSlider").value = selected;
     $("yearSlider").style.setProperty(
       "--progress",
@@ -142,9 +187,12 @@ export function mountReal(ctx, data, metadata) {
     if (r.forest_share_of_valid_classified_area_pct !== null)
       animateNumber("rate", r.forest_share_of_valid_classified_area_pct, "%");
     else $("rate").textContent = "—";
-    animateNumber("delta", r.valid_classified_area_fraction * 100, "%");
-    $("deltaNote").textContent =
-      "森林类面积 " + (r.forest_area_km2 / 10000).toFixed(2) + " 万km²";
+    if (Number.isFinite(r.valid_classified_area_fraction))
+      animateNumber("delta", r.valid_classified_area_fraction * 100, "%");
+    else $("delta").textContent = "—";
+    $("deltaNote").textContent = Number.isFinite(r.forest_area_km2)
+      ? "森林类面积 " + (r.forest_area_km2 / 10000).toFixed(2) + " 万km²"
+      : "该年度区域统计待完成";
     $("trendSubtitle").textContent = r.year + "年 · 全国研究范围";
     const svg = $("map").querySelector("svg");
     svg.setAttribute("aria-label", r.year + "年真实森林分类分布，非省级覆盖率");
@@ -178,7 +226,12 @@ export function mountReal(ctx, data, metadata) {
       for (const node of [...old].slice(0, -1))
         ctx.timeout(() => node.remove(), 650);
     }
-    drawTrend();
+    $("compositionSubtitle").textContent = r.year + "年 · " + regionName();
+    drawComposition(
+      r.forest_share_of_valid_classified_area_pct,
+      r.year + "年 · " + regionName(),
+    );
+    analysis.render();
   }
   function pauseReal() {
     ctx.clearInterval(play);
@@ -191,6 +244,24 @@ export function mountReal(ctx, data, metadata) {
     selected = rows.findIndex((r) => r.year === Number($("end").value));
     renderReal();
   };
+  $("start").onchange = () => {
+    pauseReal();
+    baseline = rows.findIndex((r) => r.year === Number($("start").value));
+    selected = Math.max(baseline, selected);
+    renderReal();
+  };
+  $("region").onchange = () => {
+    region = $("region").value;
+    renderReal();
+  };
+  $("rateMode").onclick = () => {
+    mode = "rate";
+    renderReal();
+  };
+  $("changeMode").onclick = () => {
+    mode = "change";
+    renderReal();
+  };
   $("yearSlider").oninput = () => {
     pauseReal();
     selected = Number($("yearSlider").value);
@@ -201,7 +272,7 @@ export function mountReal(ctx, data, metadata) {
       pauseReal();
       return;
     }
-    if (selected === rows.length - 1) selected = 0;
+    if (selected === rows.length - 1) selected = baseline;
     renderReal();
     $("playBtn").textContent = "Ⅱ";
     $("playBtn").setAttribute("aria-label", "暂停年份");
@@ -217,6 +288,9 @@ export function mountReal(ctx, data, metadata) {
   $("resetBtn").onclick = () => {
     pauseReal();
     selected = rows.length - 1;
+    baseline = 0;
+    region = "all";
+    mode = "rate";
     renderReal();
   };
   renderReal();

@@ -75,7 +75,7 @@ test("real: actual snapshot, raster, method and JSON export", async ({
     /12\.35%.*87\.65%/,
   );
   const chartDownload = page.waitForEvent("download");
-  await page.locator("#chartExport").click();
+  await page.locator("#pieExport").click();
   expect(
     await fs.readFile(await (await chartDownload).path(), "utf8"),
   ).toContain("分母：通过质量筛选的有效分类面积");
@@ -83,8 +83,10 @@ test("real: actual snapshot, raster, method and JSON export", async ({
     "href",
     "forest-2025.png",
   );
-  await expect(page.locator("#map [role=button]")).toHaveCount(0);
-  await expect(page.locator("#rankingPanel")).toBeHidden();
+  await expect(page.locator("#map [role=button]")).toHaveCount(34);
+  await expect(page.locator("#rankingPanel")).not.toHaveAttribute("hidden");
+  await expect(page.locator("#comparison")).not.toHaveAttribute("hidden");
+  await expect(page.locator("#trend svg")).toBeVisible();
   const event = page.waitForEvent("download");
   await page.locator("#exportBtn").click();
   const json = JSON.parse(
@@ -133,7 +135,10 @@ test("mode lifecycles clean timers, controls and catalog across repeated mounts"
   await page.evaluate(async () => {
     const app = await import("/app.js");
     const data = structuredClone(window.FOREST_REAL_DATA);
-    data.records.unshift({ ...data.records[0], year: 2024 });
+    data.records = [
+      { ...data.records.at(-1), year: 2024 },
+      data.records.at(-1),
+    ];
     await app.mountApp({ search: "", data });
   });
   await page.locator("#playBtn").click();
@@ -183,4 +188,71 @@ test("layout and reduced motion", async ({ page }, info) => {
       fullPage: true,
     });
   }
+});
+
+test("real: all analysis panels stay available and years/regions link together", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await ready(page, "real");
+  await page.route("**/forest-2024.png", (r) =>
+    r.fulfill({ path: "dist/forest-2025.png", contentType: "image/png" }),
+  );
+  await page.evaluate(async () => {
+    const data = structuredClone(window.FOREST_REAL_DATA),
+      last = data.records.at(-1);
+    data.records = [
+      { ...last, year: 2024, forest_share_of_valid_classified_area_pct: 10 },
+      { ...last, year: 2025, forest_share_of_valid_classified_area_pct: 20 },
+    ];
+    data.regions = [
+      {
+        region_id: "330000",
+        name_zh: "浙江省",
+        records: data.records.map((r) => ({
+          ...r,
+          forest_share_of_valid_classified_area_pct: r.year === 2024 ? 30 : 40,
+        })),
+      },
+    ];
+    await (await import("/app.js")).mountApp({ search: "", data });
+  });
+  for (const id of [
+    "trendPanel",
+    "compositionPanel",
+    "rankingPanel",
+    "comparison",
+  ])
+    await expect(page.locator("#" + id)).not.toHaveAttribute("hidden");
+  await page.locator("#rankingPanel summary").click();
+  await expect(page.locator(".real-rank-row")).toHaveCount(1);
+  await expect(page.locator(".real-rank-row")).toContainText("+10.00");
+  await page.locator(".real-rank-row").click();
+  await expect(page.locator("#region")).toHaveValue("330000");
+  await expect(page.locator(".share-pie")).toHaveAttribute(
+    "aria-label",
+    /40\.00%/,
+  );
+  await page.locator("#comparison summary").click();
+  await expect(page.locator("#miniStart image")).toHaveAttribute(
+    "href",
+    "forest-2024.png",
+  );
+  await expect(page.locator("#miniEnd image")).toHaveAttribute(
+    "href",
+    "forest-2025.png",
+  );
+  await page.locator("#changeMode").click();
+  await expect(page.locator("#mapTitle")).toContainText(
+    "2024—2025年省级分类占比差",
+  );
+  await page.selectOption("#end", "2024");
+  await expect(page.locator(".share-pie")).toHaveAttribute(
+    "aria-label",
+    /30\.00%/,
+  );
+  await expect(page.locator("#ranking")).toContainText("两个不同年度");
+  await page.locator("#resetBtn").click();
+  await expect(page.locator("#region")).toHaveValue("all");
+  await expect(page.locator("#end")).toHaveValue("2025");
 });

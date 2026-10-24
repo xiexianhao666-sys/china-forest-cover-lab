@@ -112,8 +112,16 @@ def summarize(lc: str | Path, boundary: str | Path, year: int, qc: str | Path | 
             raise ValueError("Raster footprint does not cover the full boundary. Mosaic all tiles into one aligned raster first; partial statistics are refused.")
         projected_mapping = mapping(projected)
         # Fixed bounded windows also protect against a GeoTIFF stored as one huge strip.
-        for row in range(0, dataset.height, 512):
-            for col in range(0, dataset.width, 512):
+        # Skip only blocks wholly outside the projected geometry envelope.
+        # Keep the same global block grid and exact pixel-centre geometry mask.
+        minx, miny, maxx, maxy = projected.bounds
+        corners = [~affine * (x, y) for x in (minx, maxx) for y in (miny, maxy)]
+        col0 = max(0, int(np.floor(min(p[0] for p in corners) / 512)) * 512)
+        row0 = max(0, int(np.floor(min(p[1] for p in corners) / 512)) * 512)
+        col1 = min(dataset.width, int(np.ceil(max(p[0] for p in corners))) + 1)
+        row1 = min(dataset.height, int(np.ceil(max(p[1] for p in corners))) + 1)
+        for row in range(row0, row1, 512):
+            for col in range(col0, col1, 512):
                 window = Window(col, row, min(512, dataset.width - col), min(512, dataset.height - row))
                 window_transform = dataset.window_transform(window)
                 window_shape = (int(window.height), int(window.width))
