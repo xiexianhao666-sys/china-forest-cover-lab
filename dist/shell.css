@@ -1,0 +1,798 @@
+/* 方案 C：单壳 + 控制带。只保留 3 层容器：顶栏、一个主壳、浮出层。
+   该文件仅用于预览 shell.html，不改仓库。 */
+
+body {
+  background:
+    radial-gradient(
+      900px 480px at 6% -8%,
+      rgba(208, 227, 238, 0.85),
+      transparent 70%
+    ),
+    radial-gradient(
+      760px 420px at 98% 2%,
+      rgba(204, 226, 219, 0.8),
+      transparent 66%
+    ),
+    linear-gradient(180deg, #eef3f6 0%, #e9eef2 48%, #edf1f4 100%);
+  background-attachment: fixed;
+}
+
+/* 第 1 层：顶栏去边框，融入背景 */
+.site-header {
+  height: 68px;
+  border: none;
+  background: none;
+  padding: 0 30px;
+  box-shadow: none;
+}
+.site-header h1 {
+  font-size: 21px;
+}
+.site-header nav button {
+  border: 1px solid rgba(163, 177, 189, 0.45);
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 10px;
+  padding: 6px 13px;
+}
+
+/* 第 2 层：唯一的主壳 */
+main {
+  margin: 0 24px 18px;
+  padding: 14px 18px 6px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.62);
+  -webkit-backdrop-filter: blur(26px) saturate(180%);
+  backdrop-filter: blur(26px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  box-shadow:
+    0 18px 50px rgba(23, 42, 58, 0.13),
+    0 2px 6px rgba(23, 42, 58, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+/* 控制带：工具条 + 口径提示 + 密钥状态，共用底部分隔线，不再各自成卡 */
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+  padding: 2px 0 12px;
+  background: none;
+  border: none;
+  border-bottom: 1px solid rgba(38, 55, 70, 0.07);
+  border-radius: 0;
+  box-shadow: none;
+}
+.toolbar button,
+.toolbar select {
+  border-radius: 10px;
+  border-color: rgba(163, 177, 189, 0.5);
+  background: rgba(255, 255, 255, 0.62);
+}
+.segmented {
+  padding: 2px;
+  gap: 2px;
+  border-radius: 11px;
+  background: rgba(120, 128, 138, 0.13);
+}
+.segmented button {
+  border: none;
+  border-radius: 9px;
+  background: none;
+}
+.segmented button.selected {
+  background: rgba(255, 255, 255, 0.96);
+  color: var(--ink);
+  box-shadow:
+    0 1px 3px rgba(23, 42, 58, 0.16),
+    0 0 0 0.5px rgba(23, 42, 58, 0.08);
+}
+.data-notice {
+  margin: 0;
+  padding: 9px 0;
+  background: none;
+  border: none;
+  border-bottom: 1px solid rgba(38, 55, 70, 0.07);
+  border-radius: 0;
+  font-size: 12.5px;
+  color: var(--muted);
+}
+.demo-tag {
+  background: rgba(120, 128, 138, 0.14);
+  color: var(--muted);
+  border-radius: 7px;
+  padding: 2px 7px;
+}
+
+/* 密钥状态：一行内联提示，点击才展开输入面板 */
+#authHost,
+#authHost[data-state="valid"],
+#authHost[data-state="none"],
+#authHost[data-state="offline"],
+#authHost[data-state="expired"] {
+  margin: 0;
+  border: none;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  border-bottom: 1px solid rgba(38, 55, 70, 0.07);
+}
+.auth-bar {
+  padding: 9px 0;
+  gap: 10px;
+  background: none;
+}
+.auth-bar button {
+  border-radius: 9px;
+  padding: 5px 12px;
+  background: rgba(255, 255, 255, 0.55);
+  border-color: rgba(163, 177, 189, 0.45);
+}
+.auth-bar button.primary {
+  background: var(--blue);
+  border-color: var(--blue);
+}
+.auth-dot {
+  box-shadow: 0 0 0 3px rgba(35, 141, 141, 0.16);
+}
+.auth-form {
+  padding: 12px 0 16px;
+  border-top: none;
+  border-bottom: none;
+}
+.auth-form .auth-hint {
+  max-width: 720px;
+}
+
+/* 主区：地图与图表同处一壳，dock 去掉卡片形态 */
+.workspace {
+  margin: 0;
+  padding: 4px 0 8px;
+  border: none;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+.map-heading h2 {
+  font-size: 17px;
+  letter-spacing: 0.01em;
+}
+.map-annotation {
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.82);
+  -webkit-backdrop-filter: blur(12px) saturate(160%);
+  backdrop-filter: blur(12px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 6px 18px rgba(23, 42, 58, 0.1);
+}
+.analysis-dock details,
+.analysis-dock details[open],
+.analysis-dock summary {
+  background: none !important;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+}
+.analysis-dock details {
+  border-top: 1px solid rgba(38, 55, 70, 0.07);
+  padding-top: 2px;
+}
+.analysis-dock details:first-of-type {
+  border-top: none;
+}
+.analysis-dock summary {
+  padding: 10px 0 8px !important;
+  font-size: 14px;
+  color: var(--ink) !important;
+  background: none !important;
+}
+.analysis-dock summary .collapse-symbol {
+  opacity: 0.45;
+}
+.analysis-dock .panel-content {
+  padding: 0 0 12px;
+  background: none;
+}
+.analysis-dock .plot-toolbar,
+.analysis-dock .panel-note,
+.analysis-dock .plot-caption {
+  color: var(--muted);
+}
+.analysis-dock .plot-toolbar button {
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.6);
+}
+.analysis-dock #trend,
+.analysis-dock #ranking,
+.analysis-dock .compare-maps {
+  border-radius: 12px;
+  background: none;
+  padding: 0;
+}
+
+/* 地图底部：图例与播放器合并成一条胶囊 */
+.map-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 6px;
+}
+.map-legend {
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  border-radius: 11px;
+  padding: 5px 10px;
+  box-shadow: none;
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+.playback-panel {
+  margin: 8px 0 0;
+  padding: 8px 12px;
+  border-radius: 13px;
+  background: rgba(255, 255, 255, 0.62);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow: none;
+  -webkit-backdrop-filter: blur(12px) saturate(160%);
+  backdrop-filter: blur(12px) saturate(160%);
+}
+.playback-heading {
+  display: none;
+}
+.timeline strong {
+  font-variant-numeric: tabular-nums;
+}
+.map-footnote {
+  padding: 8px 0 2px;
+  background: none;
+  color: var(--muted);
+  font-size: 12.5px;
+}
+
+/* 第 3 层：浮出层保留玻璃与投影 */
+dialog#sourceDialog {
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.86);
+  -webkit-backdrop-filter: blur(26px) saturate(180%);
+  backdrop-filter: blur(26px) saturate(180%);
+  box-shadow: 0 26px 70px rgba(23, 42, 58, 0.24);
+}
+dialog#sourceDialog::backdrop {
+  background: rgba(23, 42, 58, 0.3);
+  -webkit-backdrop-filter: blur(7px);
+  backdrop-filter: blur(7px);
+}
+#tooltip {
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.9);
+  -webkit-backdrop-filter: blur(16px) saturate(170%);
+  backdrop-filter: blur(16px) saturate(170%);
+  box-shadow: 0 10px 26px rgba(23, 42, 58, 0.16);
+}
+
+/* 页脚：并进主壳的下边缘 */
+footer {
+  margin: 0 24px;
+  padding: 0 18px 14px;
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+@media (max-width: 900px) {
+  main {
+    margin: 0 12px 12px;
+    padding: 10px 12px 4px;
+    border-radius: 18px;
+  }
+  .toolbar {
+    flex-wrap: wrap;
+  }
+  .map-bottom {
+    flex-wrap: wrap;
+  }
+}
+
+/* ===== 对比度：文字与分隔线加深一档 ===== */
+:root {
+  --ink: #1d2d3a;
+  --muted: #57656f;
+  --line: #c6d1d9;
+}
+.toolbar,
+.data-notice,
+#authHost {
+  border-bottom-color: rgba(29, 45, 58, 0.12);
+}
+.analysis-dock details {
+  border-top-color: rgba(29, 45, 58, 0.12);
+}
+.analysis-dock summary {
+  color: #16303f !important;
+  font-weight: 600;
+}
+.map-heading h2 {
+  color: #10293a;
+}
+
+/* ===== 地图交互：悬停高亮描边 ===== */
+.map-layer path.province {
+  transition:
+    stroke 0.16s ease,
+    stroke-width 0.16s ease,
+    filter 0.16s ease;
+}
+.map-layer path.province[role="button"]:hover,
+.map-layer path.province[role="button"]:focus-visible,
+.map-layer path.province.hl {
+  stroke: #0f3a2d !important;
+  stroke-width: 1.7 !important;
+  filter: drop-shadow(0 1px 4px rgba(15, 58, 45, 0.45));
+  cursor: pointer;
+  outline: none;
+}
+.map-annotation,
+.map-heading {
+  transition: opacity 0.2s ease;
+}
+
+/* ===== 图表过渡：折线描绘、圆点淡入、饼图缩放 ===== */
+#trend svg {
+  animation: fade-in 0.28s ease;
+}
+#trend path.tl-line:not(.cmp) {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: line-draw 0.62s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+#trend path.tl-line.cmp {
+  animation: fade-in 0.5s ease;
+}
+#trend circle.tl-dot {
+  animation: dot-in 0.36s ease backwards;
+}
+#composition svg {
+  transform-origin: 160px 75px;
+  animation: pie-in 0.46s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.real-rank-row i {
+  transition: width 0.42s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.analysis-dock details[open] .panel-content {
+  animation: fade-up 0.24s ease;
+}
+#comparison .compare-maps svg {
+  animation: fade-in 0.3s ease;
+}
+
+@keyframes line-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes dot-in {
+  from {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+}
+@keyframes pie-in {
+  from {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+}
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+
+/* ===== 按钮与浮层的轻微反馈 ===== */
+.toolbar button,
+.toolbar select,
+.analysis-dock button,
+.auth-bar button,
+.segmented button {
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    box-shadow 0.15s ease,
+    transform 0.08s ease;
+}
+.toolbar button:active,
+.analysis-dock button:active,
+.auth-bar button:active {
+  transform: translateY(1px);
+}
+.auth-dot {
+  transition: box-shadow 0.2s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #trend svg,
+  #trend path.tl-line,
+  #trend circle.tl-dot,
+  #composition svg,
+  .analysis-dock details[open] .panel-content,
+  #comparison .compare-maps svg {
+    animation: none !important;
+  }
+  .real-rank-row i,
+  .map-layer path.province,
+  .toolbar button,
+  .analysis-dock button {
+    transition: none !important;
+  }
+}
+
+/* ===== 质感层：颗粒、光斑、发丝边、字阶、地图镜面板 ===== */
+body {
+  background:
+    radial-gradient(
+      520px 320px at 12% -6%,
+      rgba(214, 232, 240, 0.9),
+      transparent 70%
+    ),
+    radial-gradient(
+      420px 260px at 88% 2%,
+      rgba(206, 230, 221, 0.75),
+      transparent 68%
+    ),
+    radial-gradient(
+      760px 520px at 50% 120%,
+      rgba(255, 255, 255, 0.85),
+      transparent 70%
+    ),
+    linear-gradient(180deg, #eff4f7 0%, #e9eff3 46%, #edf2f5 100%);
+  background-attachment: fixed;
+}
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image: radial-gradient(
+    rgba(29, 45, 58, 0.055) 1px,
+    transparent 1px
+  );
+  background-size: 3px 3px;
+  opacity: 0.55;
+  mix-blend-mode: multiply;
+}
+
+/* 顶栏：品牌块与更紧的字距 */
+.site-header {
+  position: relative;
+  z-index: 1;
+}
+.site-header h1 {
+  letter-spacing: -0.01em;
+  font-weight: 700;
+}
+.site-header h1::before {
+  content: "";
+  display: inline-block;
+  width: 6px;
+  height: 20px;
+  margin-right: 12px;
+  border-radius: 2px;
+  background: linear-gradient(180deg, #2f8a76, #225a86);
+  vertical-align: -3px;
+}
+.site-header .edition {
+  letter-spacing: 0.04em;
+}
+
+/* 主壳：多层投影 + 内高光 + 发丝描边 */
+main {
+  position: relative;
+  z-index: 1;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.78),
+    rgba(255, 255, 255, 0.5)
+  );
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.9) inset,
+    0 -1px 0 rgba(163, 177, 189, 0.18) inset,
+    0 30px 70px -40px rgba(18, 38, 52, 0.55),
+    0 12px 28px -18px rgba(18, 38, 52, 0.28);
+}
+main::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.55),
+    inset 0 40px 60px -50px rgba(255, 255, 255, 0.95);
+}
+
+/* 字阶：指标数字放大，标签收紧 */
+.map-annotation strong {
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  color: #4d606d;
+}
+.map-annotation b {
+  font-size: 21px;
+  font-weight: 650;
+  letter-spacing: -0.015em;
+  font-variant-numeric: tabular-nums;
+  color: #14293a;
+}
+.map-annotation span {
+  font-size: 12px;
+  letter-spacing: 0.05em;
+  color: #62727e;
+}
+.map-annotation small {
+  font-size: 11.5px;
+  letter-spacing: 0.02em;
+}
+.map-heading h2 {
+  font-size: 18px;
+  letter-spacing: -0.005em;
+  font-weight: 650;
+}
+.map-heading p {
+  letter-spacing: 0.02em;
+  color: #5a6b77;
+}
+.analysis-dock summary {
+  font-size: 11.5px !important;
+  letter-spacing: 0.09em;
+  font-weight: 650 !important;
+  color: #3f505c !important;
+}
+
+.data-notice {
+  letter-spacing: 0.02em;
+}
+
+/* 地图：镜面板，去掉硬边 */
+.map-layer {
+  border-radius: 16px;
+  overflow: hidden;
+  background: #fbfcfd;
+  box-shadow:
+    0 0 0 1px rgba(29, 45, 58, 0.07),
+    0 14px 34px -22px rgba(18, 38, 52, 0.45);
+}
+.map-layer svg {
+  display: block;
+}
+.map-layer > svg > rect:first-of-type {
+  fill: #fcfdfd;
+  stroke: rgba(29, 45, 58, 0.08);
+}
+
+/* 图表：柔和底板、点线网格、坐标轴降噪 */
+#trend svg > rect:nth-of-type(1) {
+  fill: #f6f9f8;
+}
+#trend svg > line {
+  stroke: #e3eaee;
+}
+#trend svg > text,
+#composition svg text {
+  fill: #5b6b76;
+}
+#ranking svg text,
+#comparison svg text {
+  fill: #5b6b76;
+}
+
+/* 控件：内高光与柔和投影 */
+.toolbar select,
+.toolbar button,
+.analysis-dock button,
+.auth-bar button {
+  background: linear-gradient(180deg, #ffffff, #f4f7f9);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.9) inset,
+    0 1px 2px rgba(18, 38, 52, 0.08);
+}
+.toolbar button:hover,
+.analysis-dock button:hover,
+.auth-bar button:hover {
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.9) inset,
+    0 2px 6px rgba(18, 38, 52, 0.12);
+}
+.segmented {
+  box-shadow: inset 0 1px 3px rgba(18, 38, 52, 0.12);
+}
+/* 分析栏：与地图之间加发丝分隔，标题左对齐 */
+.analysis-dock {
+  border-left: 1px solid rgba(29, 45, 58, 0.08);
+  padding-left: 18px;
+}
+.analysis-dock summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+/* 地图镜面：内阴影 + 高光环，避免死白 */
+.map-layer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 16px;
+  pointer-events: none;
+  box-shadow:
+    inset 0 0 70px -26px rgba(18, 38, 52, 0.22),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.55);
+}
+/* 顶栏：极浅渐变承载品牌区 */
+.site-header {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.55),
+    rgba(255, 255, 255, 0)
+  );
+  padding-bottom: 10px;
+}
+/* 图表网格：虚线收敛 */
+#trend svg > line {
+  stroke: #dfe8e4;
+  stroke-dasharray: 2 3;
+}
+
+/* ===== 全局字体与主流官网式中性配色 ===== */
+:root {
+  --font-sans:
+    -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI Variable Text",
+    "Segoe UI", "MiSans", "PingFang SC", "Microsoft YaHei UI", "Noto Sans SC",
+    sans-serif;
+  --ink: #1d1d1f;
+  --muted: #6e6e73;
+  --line: #e5e5e7;
+}
+html,
+body {
+  font-family: var(--font-sans);
+  color: var(--ink);
+  letter-spacing: 0.01em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+button,
+input,
+select,
+textarea,
+summary,
+svg text,
+.rank-track,
+.change-scale-ticks {
+  font-family: var(--font-sans);
+}
+.site-header h1 {
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+
+/* 去掉多余解释文字 */
+.site-header .edition,
+.playback-panel p,
+.plot-caption,
+.analysis-dock .panel-note,
+.map-subtitle:empty {
+  display: none;
+}
+
+/* 控件：胶囊化、细边、中性色 */
+.toolbar select,
+.toolbar button,
+.plot-toolbar button,
+.analysis-dock button,
+.auth-bar button,
+.segmented button {
+  border-radius: 980px;
+  border: 1px solid var(--line);
+  background: #fff;
+  color: var(--ink);
+  font-weight: 500;
+  font-size: 12.5px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+.toolbar button.selected,
+.segmented button[aria-pressed="true"] {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: #fff;
+}
+
+/* 变化幅度：色棒图例，无文字说明 */
+#mapLegend .change-scale {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 190px;
+}
+.change-scale-bar {
+  display: block;
+  height: 8px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #b56c41 0%, #f0f1ed 50%, #268168 100%);
+}
+.change-scale-ticks {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.change-scale-ticks b {
+  font-weight: 500;
+}
+.change-scale-unit {
+  font-size: 11px;
+  color: var(--muted);
+  align-self: center;
+  margin-left: 10px;
+}
+#mapLegend {
+  align-items: center;
+}
+
+/* 变化幅度色棒：固定宽度，避免被 flex 压缩 */
+#mapLegend.real-legend,
+.map-bottom #mapLegend {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 12px;
+}
+#mapLegend .change-scale {
+  flex: 0 0 auto;
+  min-width: 220px;
+  width: 220px;
+}
+.change-scale-bar {
+  width: 220px;
+}
+.change-scale-ticks {
+  width: 220px;
+}
+
+/* 覆盖图例小方块对色棒的约束 */
+#mapLegend .change-scale .change-scale-bar {
+  display: block;
+  width: 220px !important;
+  min-width: 220px;
+  height: 8px !important;
+  border-radius: 4px !important;
+  background: linear-gradient(
+    90deg,
+    #b56c41 0%,
+    #f0f1ed 50%,
+    #268168 100%
+  ) !important;
+}
+
+/* 密钥状态栏出现时压缩工作区高度，保持单屏不滚动 */
+main.auth-shown .workspace {
+  height: calc(100dvh - 262px);
+}
+#authHost[hidden] {
+  display: none;
+}

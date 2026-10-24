@@ -1,5 +1,15 @@
 # 更新记录
 
+## 2026-10-24 · 单壳版面与本地密钥入口
+
+- 呈现层换成单壳版面：新增 `dist/shell.css`（主壳、控制带、分析栏、质感层）与 `dist/auth.css`，`dist/index.html` 引入两者及 `auth-panel.js`；工具条、数据提示、密钥条压成三条控制带，分析栏去掉卡片边框与底色。
+- 删除重复解释文字（版本徽标、播放器说明、折线/饼图附注、排名提示、变化幅度副标题），口径说明保留在「数据说明」弹窗与 `national-statistics.json`；变化幅度图例由文字改为渐变条。
+- 全局换成系统字体栈与中性色，控件统一胶囊形、选中态黑底白字；补省份悬停描边、Shift 叠加对比省、折线描绘与饼图缩放动画（均带 `prefers-reduced-motion` 分支）。
+- 新增本地密钥入口：仅由 `tools/launcher.py` 提供 `GET /api/auth/status`、`POST /api/auth/login`、`POST /api/auth/token`，只接受本机来源，令牌走当前 Windows 用户 DPAPI，密码不落盘；静态托管下密钥条自动隐藏。
+- `app.js` 挂载后触发 `forest:ready`，`auth-panel.js` 在该事件后重新挂载，避免 `document.body.innerHTML` 替换时丢失状态栏。
+- `--self-test` 扩到 11 项（含鉴权状态接口）；`tests/site.spec.cjs` 饼图导出断言改为校验 SVG 内容且不再要求已删除的分母文案。
+- 验证：`node --check` 五个前端脚本、`ast.parse` 启动器与 `--self-test` 11/11、1894×1244 单屏核验通过。真实 Earthdata 登录、非 Windows/DPAPI 行为、390×844 移动布局仍未验证。
+
 ## 2026-10-24 · 零依赖本地启动器
 
 - 新增 `tools/launcher.py`：仅用标准库起只读静态服务并打开默认浏览器，默认入口为真实数据快照，支持 `--demo`、`--pending`、`--port`、`--host`、`--root`、`--no-browser`、`--self-test`。

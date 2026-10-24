@@ -19,13 +19,19 @@
 from __future__ import annotations
 
 import argparse
+import base64
+import json
+import math
+import os
 import socket
 import sys
 import threading
 import time
 import urllib.error
+import urllib.parse
 import urllib.request
 import webbrowser
+from datetime import datetime, timezone
 from functools import partial
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -49,6 +55,64 @@ MIME_OVERRIDES = {
 
 ENTRY_FILES = ("index.html",)
 DATA_FILES = ("real-data.js", "national-statistics.json")
+
+AUTH_ROOT = Path(__file__).resolve().parent.parent / "integrations" / "appeears"
+AUTH_GET = "/api/auth/status"
+AUTH_POST = ("/api/auth/login", "/api/auth/token")
+LOCAL_ORIGINS = {"127.0.0.1", "localhost", "::1"}
+
+
+def auth_modules():
+    """按需加载 integrations/appeears 下的令牌存储与 API 客户端。"""
+    if not AUTH_ROOT.is_dir():
+        raise RuntimeError("未找到 integrations/appeears，无法读写本地令牌缓存。")
+    if str(AUTH_ROOT) not in sys.path:
+        sys.path.insert(0, str(AUTH_ROOT))
+    import credential_store as store  # noqa: PLC0415 - 延迟导入避免影响静态模式
+    import appeears as client  # noqa: PLC0415
+
+    return store, client
+
+
+def token_expiration(token: str) -> str | None:
+    """从 JWT 的 exp 声明推出到期时间；非 JWT 返回 None。"""
+    parts = token.split(".")
+    if len(parts) != 3:
+        return None
+    try:
+        padded = parts[1] + "=" * (-len(parts[1]) % 4)
+        payload = json.loads(base64.urlsafe_b64decode(padded))
+        exp = int(payload["exp"])
+    except (ValueError, KeyError, TypeError):
+        return None
+    return datetime.fromtimestamp(exp, timezone.utc).isoformat()
+
+
+def auth_state() -> dict:
+    """返回密钥状态；只在当前 Windows 用户能解密时给出 valid/expired。"""
+    if os.name != "nt":
+        return {"state": "unavailable", "reason": "DPAPI 仅在 Windows 可用"}
+    try:
+        store, _ = auth_modules()
+    except RuntimeError as error:
+        return {"state": "unavailable", "reason": str(error)}
+    if not store.CACHE.exists():
+        return {"state": "none"}
+    try:
+        content = json.loads(store.crypt(store.CACHE.read_bytes(), decrypt=True))
+        expires = store.parse_expiration(content["expiration"])
+    except Exception:
+        return {"state": "none"}
+    now = datetime.now(timezone.utc)
+    remaining = math.ceil((expires - now).total_seconds() / 86400)
+    return {
+        "state": "expired" if expires <= now else "valid",
+        "expires_at": expires.isoformat(),
+        "remaining_days": remaining,
+        "verified_at": datetime.fromtimestamp(
+            store.CACHE.stat().st_mtime, timezone.utc
+        ).isoformat(),
+    }
 
 
 def log(message: str = "") -> None:
@@ -142,6 +206,80 @@ class StaticHandler(SimpleHTTPRequestHandler):
     def log_error(self, format: str, *args) -> None:
         """错误已由 log_request 输出，这里不再重复打印。"""
 
+    # --- 本地密钥接口（仅 127.0.0.1 / localhost 页面可调用） ---
+
+    def send_json(self, payload: dict, status: int = 200) -> None:
+        body = json.dumps(payload, ensure_ascii=False).encode()
+        self.send_response(status)
+        self.send_header("Content-Type", "application/json; charset=utf-8")
+        self.send_header("Content-Length", str(len(body)))
+        self.end_headers()
+        self.wfile.write(body)
+
+    def origin_allowed(self) -> bool:
+        origin = self.headers.get("Origin") or self.headers.get("Referer") or ""
+        if not origin:
+            return True
+        return urllib.parse.urlsplit(origin).hostname in LOCAL_ORIGINS
+
+
+    def read_json(self) -> dict:
+        length = int(self.headers.get("Content-Length") or 0)
+        if length <= 0 or length > 8192:
+            raise ValueError("请求体为空或过大。")
+        payload = json.loads(self.rfile.read(length))
+        if not isinstance(payload, dict):
+            raise ValueError("请求体必须是 JSON 对象。")
+        return payload
+
+    def do_GET(self) -> None:  # noqa: N802 - 覆盖基类方法
+        if self.path.split("?", 1)[0] == AUTH_GET:
+            self.send_json(auth_state())
+            return
+        super().do_GET()
+
+    def do_POST(self) -> None:  # noqa: N802 - 覆盖基类方法
+        path = self.path.split("?", 1)[0]
+        if path not in AUTH_POST:
+            self.send_error(405, "Method Not Allowed")
+            return
+        if not self.origin_allowed():
+            self.send_json({"error": "只接受来自本机 127.0.0.1 的请求。"}, 403)
+            return
+        try:
+            payload = self.read_json()
+            store, client = auth_modules()
+            if path == "/api/auth/login":
+                username = str(payload.get("username") or "").strip()
+                password = str(payload.get("password") or "")
+                if not username or not password:
+                    raise ValueError("未填写 Earthdata 用户名或密码。")
+                basic = base64.b64encode(
+                    f"{username}:{password}".encode()
+                ).decode()
+                app = client.AppEEARS()
+                result = app.request("/login", method="POST", basic=basic)
+                if not isinstance(result, dict) or not result.get("token"):
+                    raise ValueError("登录响应缺少 AppEEARS 令牌。")
+                expires = result.get("expiration") or token_expiration(
+                    result["token"]
+                )
+                if not expires:
+                    raise ValueError("登录响应缺少到期时间，未保存令牌。")
+                store.write_token(result["token"], expires)
+            else:
+                token = str(payload.get("token") or "").strip()
+                expires = payload.get("expiration") or token_expiration(token)
+                if not token:
+                    raise ValueError("未填写令牌。")
+                if not expires:
+                    raise ValueError("令牌不是 JWT，请同时填写到期时间。")
+                store.write_token(token, str(expires))
+            self.send_json(auth_state())
+        except Exception as error:  # noqa: BLE001 - 统一回显安全文案
+            message = str(error) or "密钥操作失败。"
+            self.send_json({"error": message}, 400)
+
 
 def make_server(host: str, port: int, root: Path) -> ThreadingHTTPServer:
     handler = partial(StaticHandler, directory=root)
@@ -174,6 +312,7 @@ def self_test(server: ThreadingHTTPServer, host: str, port: int, root: Path) -> 
         ("/index.html", 200, "text/html"),
         ("/app.js", 200, "text/javascript"),
         ("/style.css", 200, "text/css"),
+        ("/api/auth/status", 200, "application/json"),
         ("/national-statistics.json", 200, "application/json"),
         ("/?demo=1", 200, "text/html"),
         ("/%2e%2e/AGENTS.md", 404, ""),

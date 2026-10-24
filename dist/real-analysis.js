@@ -35,7 +35,17 @@ export function mountAnalysis(ctx, data, state, selectRegion) {
     const s = state(),
       records = [...series()].sort((a, b) => a.year - b.year),
       good = records.filter((r) => Number.isFinite(share(r)));
-    $("trendSubtitle").textContent = label() + " · 年度分类占比";
+    const cmpId = s.compare && s.compare !== s.region ? s.compare : null;
+    const cmpRegion = cmpId ? regions.find((r) => r.region_id === cmpId) : null;
+    const cmpGood = cmpRegion
+      ? [...cmpRegion.records]
+          .filter((r) => Number.isFinite(share(r)))
+          .sort((a, b) => a.year - b.year)
+      : [];
+    $("trendSubtitle").textContent =
+      label() +
+      (cmpRegion ? " 对比 " + cmpRegion.name_zh : "") +
+      " · 年度分类占比";
     $("chartExport").title = "导出年度趋势图";
     $("chartExport").disabled = !good.length;
     if (!good.length) {
@@ -44,9 +54,10 @@ export function mountAnalysis(ctx, data, state, selectRegion) {
     }
     const first = data.records[0].year,
       last = data.records.at(-1).year;
+    const allShares = [...good, ...cmpGood].map(share);
     const max = Math.min(
       100,
-      Math.max(10, Math.ceil((Math.max(...good.map(share)) * 1.15) / 10) * 10),
+      Math.max(10, Math.ceil((Math.max(...allShares) * 1.15) / 10) * 10),
     );
     const x = (y) =>
         first === last ? 190 : 45 + ((y - first) / (last - first)) * 275,
@@ -73,15 +84,38 @@ export function mountAnalysis(ctx, data, state, selectRegion) {
       pen = true;
       previous = r.year;
     }
-    svg += `<path d="${d}" fill="none" stroke="#20704e" stroke-width="2"/>`;
+    svg += `<path class="tl-line" d="${d}" fill="none" stroke="#20704e" stroke-width="2" pathLength="1"/>`;
     for (const r of good)
-      svg += `<circle cx="${x(r.year)}" cy="${y(share(r))}" r="${r.year === s.year ? 4 : 2}" fill="${r.year === s.year ? "white" : "#20704e"}" stroke="#20704e"><title>${r.year}年 ${share(r).toFixed(2)}%</title></circle>`;
+      svg += `<circle class="tl-dot" cx="${x(r.year)}" cy="${y(share(r))}" r="${r.year === s.year ? 4 : 2}" fill="${r.year === s.year ? "white" : "#20704e"}" stroke="#20704e"><title>${r.year}年 ${share(r).toFixed(2)}%</title></circle>`;
+    if (cmpGood.length) {
+      let cpen = false,
+        cprev = null,
+        cd = "";
+      for (const r of cmpGood) {
+        if (!Number.isFinite(share(r))) {
+          cpen = false;
+          continue;
+        }
+        cd +=
+          (cpen && r.year === cprev + 1 ? "L" : "M") +
+          x(r.year) +
+          "," +
+          y(share(r)) +
+          " ";
+        cpen = true;
+        cprev = r.year;
+      }
+      svg += `<path class="tl-line cmp" d="${cd}" fill="none" stroke="#9c5a2b" stroke-width="2" stroke-dasharray="5 4" pathLength="1"/>`;
+      for (const r of cmpGood)
+        svg += `<circle class="tl-dot cmp" cx="${x(r.year)}" cy="${y(share(r))}" r="2" fill="#9c5a2b"><title>${r.year}年 ${share(r).toFixed(2)}%</title></circle>`;
+      svg += `<g font-size="10" fill="#526575"><line x1="52" y1="20" x2="76" y2="20" stroke="#20704e" stroke-width="2"/><text x="82" y="23">${esc(label())}</text><line x1="150" y1="20" x2="174" y2="20" stroke="#9c5a2b" stroke-width="2" stroke-dasharray="5 4"/><text x="180" y="23">${esc(cmpRegion.name_zh)}</text></g>`;
+    }
     const ticks = [first, last];
     for (let year = Math.ceil(first / 5) * 5; year < last; year += 5)
       if (year - first >= 2 && last - year >= 2) ticks.push(year);
     for (const year of [...new Set(ticks)])
       svg += `<text x="${x(year)}" y="209" text-anchor="middle" font-size="10" fill="#526575">${year}</text>`;
-    svg += `<text x="170" y="230" text-anchor="middle" font-size="10" fill="#526575">${first === last ? "仅1个年度，不连接为趋势线" : "分类占比差异不等同于真实森林增减"}</text></svg>`;
+    svg += "</svg>";
     $("trend").innerHTML = svg;
   }
   function difference(region) {
@@ -175,6 +209,9 @@ export function mountAnalysis(ctx, data, state, selectRegion) {
         r = regions.find((r) => r.region_id === id);
       path.dataset.id = id;
       path.style.strokeWidth = id === s.region ? "2" : ".35";
+
+      path.style.strokeDasharray =
+        s.compare && id === s.compare && id !== s.region ? "5 3" : "none";
       path.style.opacity = "1";
       if (r) {
         path.setAttribute("role", "button");
@@ -192,12 +229,12 @@ export function mountAnalysis(ctx, data, state, selectRegion) {
             ? v.toFixed(2) +
               (s.mode === "change" ? " 个百分点（分类占比差）" : "% 森林类占比")
             : "数据不足，不计算占比差") +
-          "\n点击查看该区域";
+          "\n点击查看该区域 · Shift+点击叠加对比";
         path.setAttribute("aria-label", tip);
         path.style.pointerEvents = "all";
-        path.onclick = () => {
+        path.onclick = (event) => {
           $("tooltip").style.display = "none";
-          selectRegion(id);
+          selectRegion(id, Boolean(event && event.shiftKey));
         };
         path.onmousemove = (e) => {
           const t = $("tooltip");
@@ -249,13 +286,12 @@ export function mountAnalysis(ctx, data, state, selectRegion) {
     }
     if (s.mode === "change") {
       $("mapTitle").textContent = `${s.baseline}—${s.year}年省级分类占比差`;
-      $("mapSubtitle").textContent =
-        "百分点 · 独立年度分类统计差，非森林增减判定";
+      $("mapSubtitle").textContent = "";
       svg.setAttribute("aria-label", $("mapTitle").textContent);
       svg.querySelector("title").textContent =
         "省级独立年度分类占比差，不作真实森林增减判定";
       $("mapLegend").innerHTML =
-        "<span>棕：减少</span><span>绿：增加</span><span>灰：数据不足</span><span>颜色随差值绝对值加深（5个百分点封顶）</span>";
+        '<span class="change-scale"><i class="change-scale-bar"></i><span class="change-scale-ticks"><b>−5</b><b>0</b><b>+5</b></span></span><span class="change-scale-unit">个百分点</span>';
     } else
       $("mapLegend").innerHTML =
         '<span><i style="background:#20704e"></i>森林类1—5</span><span><i style="background:#e2e6dc"></i>其他陆地类</span><span><i style="background:#9ec3d6"></i>水体</span>';

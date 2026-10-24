@@ -14,8 +14,11 @@ export function mountReal(ctx, data, metadata) {
   mountComposition();
   $("analysisDock").append(document.querySelector(".api-details"));
   let region = "all",
+    compare = null,
     baseline = 0,
     mode = "rate";
+  const presetCompare = new URLSearchParams(location.search).get("compare");
+  if (presetCompare) compare = presetCompare;
   const regions = data.regions || [];
   const regionRows = () =>
     region === "all"
@@ -30,12 +33,19 @@ export function mountReal(ctx, data, metadata) {
     data,
     () => ({
       region,
+      compare,
       baseline: rows[baseline].year,
       year: rows[selected].year,
       mode,
     }),
-    (id) => {
-      region = id;
+    (id, asCompare) => {
+      if (asCompare && id !== region && id !== "all") {
+        compare = compare === id ? null : id;
+      } else {
+        region = id;
+        compare = null;
+      }
+      if (region === "all") compare = null;
       renderReal();
     },
   );

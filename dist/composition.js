@@ -29,9 +29,8 @@ export function drawComposition(share, label) {
   $("composition").innerHTML =
     `<svg class="share-pie" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 220" role="img" aria-label="${label}森林类占比 ${share.toFixed(2)}%，其他有效分类 ${(100 - share).toFixed(2)}%">
       <circle cx="160" cy="75" r="65" fill="#d8e2e8"><title>其他有效分类（含水体） ${(100 - share).toFixed(2)}%</title></circle>${sector}
-      <g font-family="Microsoft YaHei, sans-serif" font-size="13" fill="#263746">
+      <g font-size="13" fill="#263746">
         <rect x="14" y="157" width="12" height="12" fill="#20704e"/><text x="34" y="168">森林类（1—5类）</text><text x="306" y="168" text-anchor="end" font-weight="700">${share.toFixed(2)}%</text>
         <rect x="14" y="184" width="12" height="12" fill="#d8e2e8" stroke="#8a9da9"/><text x="34" y="195">其他有效分类（含水体）</text><text x="306" y="195" text-anchor="end">${(100 - share).toFixed(2)}%</text>
-        <text x="160" y="216" text-anchor="middle" font-size="11" fill="#526575">分母：通过质量筛选的有效分类面积</text>
       </g></svg>`;
 }

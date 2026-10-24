@@ -19,6 +19,8 @@
 
 没有Node时可用零依赖启动器（仅标准库）：双击 `tools/start-windows.bat`，或运行 `python tools\launcher.py`。默认打开真实数据快照，支持 `--demo`、`--pending`、`--port`、`--root`、`--no-browser`、`--self-test`；可选打成内嵌 `dist/` 的单文件exe，见 tools/README.md。
 
+只有这个本地启动器会提供 AppEEARS 密钥入口：页面顶部显示密钥剩余天数，点「登录」输入 Earthdata 账号或直接粘贴令牌，令牌由当前 Windows 用户 DPAPI 加密保存。线上静态站点没有 `/api/auth/*`，密钥条自动隐藏，页面本身不接触任何凭据。接口与安全约束见 tools/README.md。
+
 ## 测试与持续集成
 
     pnpm exec playwright install chromium

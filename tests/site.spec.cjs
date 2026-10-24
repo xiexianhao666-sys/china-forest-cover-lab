@@ -76,9 +76,10 @@ test("real: actual snapshot, raster, method and JSON export", async ({
   );
   const chartDownload = page.waitForEvent("download");
   await page.locator("#pieExport").click();
-  expect(
-    await fs.readFile(await (await chartDownload).path(), "utf8"),
-  ).toContain("分母：通过质量筛选的有效分类面积");
+  const pieSvg = await fs.readFile(await (await chartDownload).path(), "utf8");
+  expect(pieSvg).toContain("森林类（1—5类）");
+  expect(pieSvg).toMatch(/12\.35%.*87\.65%/s);
+  expect(pieSvg).not.toContain("分母：");
   await expect(page.locator("#map .real-raster")).toHaveAttribute(
     "href",
     "forest-2025.png",

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>中国森林类面积查询</title><meta name="description" content="通过NASA AppEEARS提取MCD12Q1真实分类产品，查看全国研究范围的森林类分布和年度面积统计。非官方森林覆盖率。"><link rel="stylesheet" href="style.css"></head>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>中国森林类面积查询</title><meta name="description" content="通过NASA AppEEARS提取MCD12Q1真实分类产品，查看全国研究范围的森林类分布和年度面积统计。非官方森林覆盖率。"><link rel="stylesheet" href="style.css"><link rel="stylesheet" href="auth.css"><link rel="stylesheet" href="shell.css"></head>
 <body>
 <header class="site-header"><div><h1>中国森林覆盖变化查询</h1><span class="edition">研究样品 · 非政府网站</span></div><nav aria-label="页面工具"><button id="sourceBtn">数据说明</button><button id="exportBtn">导出数据</button></nav></header>
 <main>
@@ -10,6 +10,7 @@
 <button id="resetBtn" class="plain">重置</button><button id="dockToggle" class="dock-toggle" aria-expanded="true" aria-controls="analysisDock">收起分析面板</button>
 </section>
 <div class="data-notice"><span class="demo-tag">演示数据</span>地图与图表均为合成值，未接入实际观测数据。<span class="notice-date">2026年度数据未接入</span></div>
+<div id="authHost" hidden></div>
 <section class="workspace" id="overview" aria-label="森林覆盖地图与分析">
 <div class="map-heading"><h2 id="mapTitle">森林覆盖比例</h2><p id="mapSubtitle"></p></div>
 <div class="map-annotation" aria-label="所选区域指标"><strong id="regionTitle">全国</strong><div><span>覆盖比例</span><b id="rate"></b></div><div><span>期间变化</span><b id="delta"></b></div><small id="deltaNote"></small></div>
@@ -26,5 +27,5 @@
 <footer><span>森林资源调查 · 交互样品 v0.3</span><span>变化单位：百分点　|　演示年份：1990—2025</span></footer>
 <div id="tooltip" role="status"></div>
 <dialog id="sourceDialog"><div class="dialog-head"><h2>数据与统计口径</h2><button id="closeDialog" aria-label="关闭说明">×</button></div><p><strong>本页为学习研究样品，非政府网站。</strong>省级数值、年度序列和全国汇总均由固定公式合成，不代表实际森林覆盖率。全国演示值采用合成权重，不能作为真实面积统计。</p><p>1990—2025仅为交互示例范围。尚未接入AppEEARS或2026年度数据，未使用账号令牌。正式接入后按产品实际覆盖年份显示，并保留缺失值。</p><p>覆盖比例从20%升至25%，变化为5个百分点。遥感分类面积占比、树冠覆盖度和官方森林覆盖率的定义不同，不能直接混用。</p><p>官方独立参考：2025年中国国土绿化状况公报的森林覆盖率为25.09%。该值不参与页面地图或曲线计算。</p><p>地图采用阿里云DataV省级GeoJSON，仅供界面定位；正式研究需核实边界版本、范围与适用许可。图中经纬网为示意。</p><p><a href="https://www.forestry.gov.cn/lyj/1/lcdt/20260312/662822.html" target="_blank" rel="noopener">国土绿化公报</a>　<a href="https://geo.datav.aliyun.com/areas_v3/bound/100000_full.json" target="_blank" rel="noopener">地图来源</a></p></dialog>
-<script src="api-metadata.js"></script><script src="real-data.js"></script><script type="module" src="app.js"></script>
+<script src="api-metadata.js"></script><script src="real-data.js"></script><script src="auth-panel.js"></script><script type="module" src="app.js"></script>
 </body></html>

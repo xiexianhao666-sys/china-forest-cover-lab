@@ -37,6 +37,23 @@ python tools\launcher.py --root "D:\china-forest-cover-lab\dist"
 - 响应带 `Cache-Control: no-store`，数据更新后强刷即生效。
 - 缺 `index.html` 退出码 2；端口耗尽退出码 3；缺 `real-data.js` 不阻断，页面回落到接入等待态。
 
+## 密钥接口（仅本地）
+
+起点是“静态站点不能保存凭据”：DPAPI 加密缓存只能由本机 Python 读写，所以密钥入口只存在于本启动器。页面顶部密钥条由 `dist/auth-panel.js` 渲染，静态托管下拿不到接口就整条隐藏。
+
+| 方法 | 路径 | 请求体 | 返回 |
+|---|---|---|---|
+| GET | `/api/auth/status` | — | `{"state":"valid\|expired\|none\|unavailable","expires_at","remaining_days","verified_at"}` |
+| POST | `/api/auth/login` | `{"username","password"}` | 同 status；密码只用于换取 AppEEARS 令牌 |
+| POST | `/api/auth/token` | `{"token","expiration"?}` | 同 status；非 JWT 必须显式给到期时间 |
+
+约束：
+
+- `Origin`/`Referer` 存在时，主机必须是 `127.0.0.1`、`localhost` 或 `::1`，否则 403；请求体上限 8 KB，解析失败返回 400。
+- 令牌写入 `integrations/appeears/.secrets/appeears.dpapi`（当前 Windows 用户 DPAPI），密码不落盘、不写日志。
+- 非 Windows 或缓存损坏时返回 `unavailable`/`none`，前端据此隐藏或提示登录，不回退明文。
+- `.secrets/` 已在 `.gitignore` 中；`--self-test` 会用 `/api/auth/status` 断言 200 + `application/json`（无凭据时返回 `none`，同样计入通过）。
+
 ## 打包 exe（可选）
 
 前置：`python -m pip install pyinstaller`（约 30 MB）。然后在仓库根执行：

@@ -1,0 +1,234 @@
+/* 密钥状态栏与输入面板：iOS 风格毛玻璃，仅作用于这一块，不改页面其余视觉语言 */
+#authHost {
+  z-index: 30;
+  margin: 10px 28px 12px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.58);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  box-shadow:
+    0 10px 30px rgba(23, 42, 58, 0.12),
+    0 1px 2px rgba(23, 42, 58, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.85);
+  overflow: hidden;
+  transition: box-shadow 0.2s ease;
+}
+#authHost[data-state="none"],
+#authHost[data-state="offline"] {
+  background: rgba(255, 250, 240, 0.62);
+  box-shadow:
+    0 10px 30px rgba(120, 84, 20, 0.12),
+    0 1px 2px rgba(120, 84, 20, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.85);
+}
+#authHost[data-state="expired"] {
+  background: rgba(255, 246, 245, 0.62);
+  box-shadow:
+    0 10px 30px rgba(120, 40, 30, 0.13),
+    0 1px 2px rgba(120, 40, 30, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.85);
+}
+.auth-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: none;
+  border: none;
+}
+.auth-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--muted);
+  flex: none;
+  box-shadow: 0 0 0 4px rgba(108, 120, 130, 0.12);
+}
+.auth-bar[data-state="valid"] .auth-dot {
+  background: var(--green);
+  box-shadow: 0 0 0 4px rgba(35, 141, 141, 0.16);
+}
+.auth-bar[data-state="none"] .auth-dot,
+.auth-bar[data-state="offline"] .auth-dot {
+  background: #b7791f;
+  box-shadow: 0 0 0 4px rgba(183, 121, 31, 0.16);
+}
+.auth-bar[data-state="expired"] .auth-dot {
+  background: #b03a2e;
+  box-shadow: 0 0 0 4px rgba(176, 58, 46, 0.16);
+}
+.auth-text {
+  flex: 1;
+  min-width: 0;
+}
+.auth-text strong {
+  display: inline-block;
+  margin-right: 8px;
+  letter-spacing: 0.01em;
+}
+.auth-text span {
+  color: var(--muted);
+}
+.auth-text b {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+.auth-bar button {
+  border-radius: 10px;
+  border-color: rgba(163, 177, 189, 0.55);
+  background: rgba(255, 255, 255, 0.55);
+  padding: 6px 14px;
+}
+.auth-bar button:hover {
+  background: rgba(255, 255, 255, 0.9);
+}
+.auth-bar button.primary {
+  background: var(--blue);
+  border-color: var(--blue);
+  color: #fff;
+}
+.auth-bar button.primary:hover {
+  background: #1c4d73;
+}
+.auth-bar button.plain {
+  background: none;
+  border-color: transparent;
+  color: var(--muted);
+}
+.auth-bar button.plain:hover {
+  background: rgba(255, 255, 255, 0.7);
+  border-color: rgba(163, 177, 189, 0.45);
+}
+.auth-form {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding: 14px 16px 16px;
+  background: none;
+  border: none;
+  border-top: 1px solid rgba(38, 55, 70, 0.08);
+  border-radius: 0;
+}
+.auth-form[hidden],
+.auth-bar[hidden] {
+  display: none;
+}
+.auth-tabs {
+  display: inline-flex;
+  gap: 2px;
+  padding: 2px;
+  background: rgba(120, 128, 138, 0.14);
+  border-radius: 10px;
+  justify-self: start;
+}
+.auth-tabs button {
+  padding: 5px 12px;
+  border: none;
+  border-radius: 8px;
+  background: none;
+  box-shadow: none;
+}
+.auth-tabs button[aria-selected="true"] {
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow:
+    0 1px 3px rgba(23, 42, 58, 0.16),
+    0 0 0 0.5px rgba(23, 42, 58, 0.08);
+  color: var(--ink);
+}
+.auth-fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 10px 16px;
+}
+.auth-fields label {
+  display: grid;
+  gap: 5px;
+  color: var(--muted);
+}
+.auth-fields input {
+  padding: 9px 11px;
+  border: 1px solid rgba(163, 177, 189, 0.6);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--ink);
+  box-shadow: inset 0 1px 2px rgba(23, 42, 58, 0.06);
+}
+.auth-fields input:focus {
+  outline: 2px solid rgba(34, 90, 134, 0.35);
+  outline-offset: 1px;
+}
+.auth-hint {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12.5px;
+}
+.auth-feedback {
+  margin: 0;
+  min-height: 18px;
+  font-size: 12.5px;
+}
+.auth-feedback[data-kind="error"] {
+  color: #b03a2e;
+}
+.auth-feedback[data-kind="ok"] {
+  color: var(--green);
+}
+.auth-actions {
+  display: flex;
+  gap: 8px;
+}
+.auth-actions button {
+  border-radius: 10px;
+  padding: 7px 16px;
+}
+.auth-actions button[type="submit"] {
+  background: var(--blue);
+  border-color: var(--blue);
+  color: #fff;
+}
+.auth-actions button[type="submit"]:hover {
+  background: #1c4d73;
+}
+@media (max-width: 800px) {
+  #authHost {
+    margin: 8px 14px 10px;
+    border-radius: 14px;
+  }
+  .auth-bar {
+    flex-wrap: wrap;
+  }
+}
+/* 仅预览使用：状态切换器 */
+.preview-switch {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 50;
+  display: grid;
+  gap: 6px;
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.72);
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  backdrop-filter: blur(18px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: 14px;
+  box-shadow: 0 10px 28px rgba(23, 42, 58, 0.14);
+  font-size: 12.5px;
+}
+.preview-switch strong {
+  color: var(--muted);
+  font-weight: 600;
+}
+.preview-switch button {
+  padding: 5px 10px;
+  border-radius: 9px;
+  text-align: left;
+  background: rgba(255, 255, 255, 0.6);
+}
+.preview-switch button[aria-pressed="true"] {
+  background: var(--blue);
+  border-color: var(--blue);
+  color: #fff;
+}
