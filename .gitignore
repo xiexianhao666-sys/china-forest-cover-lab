@@ -2,3 +2,15 @@
 qa-desktop.png
 qa-mobile.png
 qa-expanded.png
+**/.secrets/
+**/.venv/
+**/__pycache__/
+**/runtime/
+**/.env
+**/.env.*
+**/*.token
+**/*.dpapi
+**/.Rhistory
+**/*.partial
+**/*.tif
+**/*.tiff

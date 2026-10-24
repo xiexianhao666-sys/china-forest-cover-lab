@@ -1,0 +1,664 @@
+{
+  "checked_at": "2026-10-23T08:05:24.958871+00:00",
+  "api_base": "https://appeears.earthdatacloud.nasa.gov/api",
+  "scope": "中国全国汇总",
+  "public_api_status": "connected",
+  "authenticated_tasks_status": "not_checked",
+  "statistics_status": "not_generated",
+  "products": [
+    {
+      "Product": "MCD12Q1",
+      "Platform": "Combined MODIS",
+      "Description": "Land Cover Type",
+      "RasterType": "Tile",
+      "Resolution": "500m",
+      "TemporalGranularity": "Yearly",
+      "Version": "061",
+      "Available": true,
+      "DocLink": "https://doi.org/10.5067/MODIS/MCD12Q1.061",
+      "Source": "LP DAAC",
+      "TemporalExtentStart": "2001-01-01",
+      "TemporalExtentEnd": "Present",
+      "Deleted": false,
+      "DOI": "10.5067/MODIS/MCD12Q1.061",
+      "Info": {
+        "collection_concept_id": "C2484079608-LPCLOUD",
+        "provider_id": "lp_prod"
+      },
+      "ProductAndVersion": "MCD12Q1.061"
+    },
+    {
+      "Product": "MOD44B",
+      "Platform": "Terra MODIS",
+      "Description": "Vegetation Continuous Fields (VCF)",
+      "RasterType": "Tile",
+      "Resolution": "250m",
+      "TemporalGranularity": "Yearly",
+      "Version": "061",
+      "Available": true,
+      "DocLink": "https://doi.org/10.5067/MODIS/MOD44B.061",
+      "Source": "LP DAAC",
+      "TemporalExtentStart": "2000-03-05",
+      "TemporalExtentEnd": "Present",
+      "Deleted": false,
+      "DOI": "10.5067/MODIS/MOD44B.061",
+      "Info": {
+        "collection_concept_id": "C2565805839-LPCLOUD",
+        "provider_id": "lp_prod"
+      },
+      "ProductAndVersion": "MOD44B.061"
+    }
+  ],
+  "layers": {
+    "MCD12Q1.061": {
+      "LC_Prop1": {
+        "AddOffset": "",
+        "Available": true,
+        "DataType": "byte",
+        "Description": "FAO-Land Cover Classification System 1 (LCCS1) land cover layer",
+        "Dimensions": [
+          "time",
+          "YDim",
+          "XDim"
+        ],
+        "FillValue": 255,
+        "FillValueAll": [
+          255
+        ],
+        "Group": "",
+        "Info": {},
+        "IsQA": false,
+        "Layer": "LC_Prop1",
+        "OrigDataType": "byte",
+        "OrigValidMax": 43,
+        "OrigValidMin": 1,
+        "QualityLayers": "['QC']",
+        "QualityProductAndVersion": "MCD12Q1.061",
+        "ScaleFactor": "",
+        "Units": "",
+        "ValidMax": 43,
+        "ValidMin": 1,
+        "XSize": 2400,
+        "YSize": 2400
+      },
+      "LC_Prop1_Assessment": {
+        "AddOffset": "",
+        "Available": true,
+        "DataType": "byte",
+        "Description": "LCCS1 land cover layer confidence",
+        "Dimensions": [
+          "time",
+          "YDim",
+          "XDim"
+        ],
+        "FillValue": 255,
+        "FillValueAll": [
+          255
+        ],
+        "Group": "",
+        "Info": {},
+        "IsQA": false,
+        "Layer": "LC_Prop1_Assessment",
+        "OrigDataType": "byte",
+        "OrigValidMax": 100,
+        "OrigValidMin": 0,
+        "QualityLayers": "['QC']",
+        "QualityProductAndVersion": "MCD12Q1.061",
+        "ScaleFactor": "",
+        "Units": "Percent",
+        "ValidMax": 100,
+        "ValidMin": 0,
+        "XSize": 2400,
+        "YSize": 2400
+      },
+      "LC_Prop2": {
+        "AddOffset": "",
+        "Available": true,
+        "DataType": "byte",
+        "Description": "FAO-LCCS2 land use layer",
+        "Dimensions": [
+          "time",
+          "YDim",
+          "XDim"
+        ],
+        "FillValue": 255,
+        "FillValueAll": [
+          255
+        ],
+        "Group": "",
+        "Info": {},
+        "IsQA": false,
+        "Layer": "LC_Prop2",
+        "OrigDataType": "byte",
+        "OrigValidMax": 40,
+        "OrigValidMin": 1,
+        "QualityLayers": "['QC']",
+        "QualityProductAndVersion": "MCD12Q1.061",
+        "ScaleFactor": "",
+        "Units": "",
+        "ValidMax": 40,
+        "ValidMin": 1,
+        "XSize": 2400,
+        "YSize": 2400
+      },
+      "LC_Prop2_Assessment": {
+        "AddOffset": "",
+        "Available": true,
+        "DataType": "byte",
+        "Description": "LCCS2 land use layer confidence",
+        "Dimensions": [
+          "time",
+          "YDim",
+          "XDim"
+        ],
+        "FillValue": 255,
+        "FillValueAll": [
+          255
+        ],
+        "Group": "",
+        "Info": {},
+        "IsQA": false,
+        "Layer": "LC_Prop2_Assessment",
+        "OrigDataType": "byte",
+        "OrigValidMax": 100,
+        "OrigValidMin": 0,
+        "QualityLayers": "['QC']",
+        "QualityProductAndVersion": "MCD12Q1.061",
+        "ScaleFactor": "",
+        "Units": "Percent",
+        "ValidMax": 100,
+        "ValidMin": 0,
+        "XSize": 2400,
+        "YSize": 2400
+      },
+      "LC_Prop3": {
+        "AddOffset": "",
+        "Available": true,
+        "DataType": "byte",
+        "Description": "FAO-LCCS3 surface hydrology layer",
+        "Dimensions": [
+          "time",
+          "YDim",
+          "XDim"
+        ],
+        "FillValue": 255,
+        "FillValueAll": [
+          255
+        ],
+        "Group": "",
+        "Info": {},
+        "IsQA": false,
+        "Layer": "LC_Prop3",
+        "OrigDataType": "byte",
+        "OrigValidMax": 51,
+        "OrigValidMin": 1,
+        "QualityLayers": "['QC']",
+        "QualityProductAndVersion": "MCD12Q1.061",
+        "ScaleFactor": "",
+        "Units": "",
+        "ValidMax": 51,
+        "ValidMin": 1,
+        "XSize": 2400,
+        "YSize": 2400
+      },
+      "LC_Prop3_Assessment": {
+        "AddOffset": "",
+        "Available": true,
+        "DataType": "byte",
+        "Description": "LCCS3 surface hydrology layer confidence",
+        "Dimensions": [
+          "time",
+          "YDim",
+          "XDim"
+        ],
+        "FillValue": 255,
+        "FillValueAll": [
+          255
+        ],
+        "Group": "",
+        "Info": {},
+        "IsQA": false,
+        "Layer": "LC_Prop3_Assessment",
+        "OrigDataType": "byte",
+        "OrigValidMax": 100,
+        "OrigValidMin": 0,
+        "QualityLayers": "['QC']",
+        "QualityProductAndVersion": "MCD12Q1.061",
+        "ScaleFactor": "",
+        "Units": "Percent",
+        "ValidMax": 100,
+        "ValidMin": 0,
+        "XSize": 2400,
+        "YSize": 2400
+      },
+      "LC_Type1": {
+        "AddOffset": "",
+        "Available": true,
+        "DataType": "byte",
+        "Description": "Land Cover Type 1: Annual International Geosphere-Biosphere Programme (IGBP) classification",
+        "Dimensions": [
+          "time",
+          "YDim",
+          "XDim"
+        ],
+        "FillValue": 255,
+        "FillValueAll": [
+          255
+        ],
+        "Group": "",
+        "Info": {},
+        "IsQA": false,
+        "Layer": "LC_Type1",
+        "OrigDataType": "byte",
+        "OrigValidMax": 17,
+        "OrigValidMin": 1,
+        "QualityLayers": "['QC']",
+        "QualityProductAndVersion": "MCD12Q1.061",
+        "ScaleFactor": "",
+        "Units": "",
+        "ValidMax": 17,
+        "ValidMin": 1,
+        "XSize": 2400,
+        "YSize": 2400
+      },
+      "LC_Type2": {
+        "AddOffset": "",
+        "Available": true,
+        "DataType": "byte",
+        "Description": "Land Cover Type 2: Annual University of Maryland (UMD) classification",
+        "Dimensions": [
+          "time",
+          "YDim",
+          "XDim"
+        ],
+        "FillValue": 255,
+        "FillValueAll": [
+          255
+        ],
+        "Group": "",
+        "Info": {},
+        "IsQA": false,
+        "Layer": "LC_Type2",
+        "OrigDataType": "byte",
+        "OrigValidMax": 15,
+        "OrigValidMin": 0,
+        "QualityLayers": "['QC']",
+        "QualityProductAndVersion": "MCD12Q1.061",
+        "ScaleFactor": "",
+        "Units": "",
+        "ValidMax": 15,
+        "ValidMin": 0,
+        "XSize": 2400,
+        "YSize": 2400
+      },
+      "LC_Type3": {
+        "AddOffset": "",
+        "Available": true,
+        "DataType": "byte",
+        "Description": "Land Cover Type 3: Annual Leaf Area Index (LAI) classification",
+        "Dimensions": [
+          "time",
+          "YDim",
+          "XDim"
+        ],
+        "FillValue": 255,
+        "FillValueAll": [
+          255
+        ],
+        "Group": "",
+        "Info": {},
+        "IsQA": false,
+        "Layer": "LC_Type3",
+        "OrigDataType": "byte",
+        "OrigValidMax": 10,
+        "OrigValidMin": 0,
+        "QualityLayers": "['QC']",
+        "QualityProductAndVersion": "MCD12Q1.061",
+        "ScaleFactor": "",
+        "Units": "",
+        "ValidMax": 10,
+        "ValidMin": 0,
+        "XSize": 2400,
+        "YSize": 2400
+      },
+      "LC_Type4": {
+        "AddOffset": "",
+        "Available": true,
+        "DataType": "byte",
+        "Description": "Land Cover Type 4: Annual BIOME-Biogeochemical Cycles (BGC) classification",
+        "Dimensions": [
+          "time",
+          "YDim",
+          "XDim"
+        ],
+        "FillValue": 255,
+        "FillValueAll": [
+          255
+        ],
+        "Group": "",
+        "Info": {},
+        "IsQA": false,
+        "Layer": "LC_Type4",
+        "OrigDataType": "byte",
+        "OrigValidMax": 8,
+        "OrigValidMin": 0,
+        "QualityLayers": "['QC']",
+        "QualityProductAndVersion": "MCD12Q1.061",
+        "ScaleFactor": "",
+        "Units": "",
+        "ValidMax": 8,
+        "ValidMin": 0,
+        "XSize": 2400,
+        "YSize": 2400
+      },
+      "LC_Type5": {
+        "AddOffset": "",
+        "Available": true,
+        "DataType": "byte",
+        "Description": "Land Cover Type 5: Annual Plant Functional Types classification",
+        "Dimensions": [
+          "time",
+          "YDim",
+          "XDim"
+        ],
+        "FillValue": 255,
+        "FillValueAll": [
+          255
+        ],
+        "Group": "",
+        "Info": {},
+        "IsQA": false,
+        "Layer": "LC_Type5",
+        "OrigDataType": "byte",
+        "OrigValidMax": 11,
+        "OrigValidMin": 0,
+        "QualityLayers": "['QC']",
+        "QualityProductAndVersion": "MCD12Q1.061",
+        "ScaleFactor": "",
+        "Units": "",
+        "ValidMax": 11,
+        "ValidMin": 0,
+        "XSize": 2400,
+        "YSize": 2400
+      },
+      "LW": {
+        "AddOffset": "",
+        "Available": true,
+        "DataType": "byte",
+        "Description": "Binary land (class 2) / water (class 1) mask derived from MOD44W",
+        "Dimensions": [
+          "time",
+          "YDim",
+          "XDim"
+        ],
+        "FillValue": 255,
+        "FillValueAll": [
+          255
+        ],
+        "Group": "",
+        "Info": {},
+        "IsQA": false,
+        "Layer": "LW",
+        "OrigDataType": "byte",
+        "OrigValidMax": 2,
+        "OrigValidMin": 1,
+        "QualityLayers": "['QC']",
+        "QualityProductAndVersion": "MCD12Q1.061",
+        "ScaleFactor": "",
+        "Units": "",
+        "ValidMax": 2,
+        "ValidMin": 1,
+        "XSize": 2400,
+        "YSize": 2400
+      },
+      "QC": {
+        "AddOffset": "",
+        "Available": true,
+        "DataType": "byte",
+        "Description": "Product quality flags",
+        "Dimensions": [
+          "time",
+          "YDim",
+          "XDim"
+        ],
+        "FillValue": 255,
+        "FillValueAll": [
+          255
+        ],
+        "Group": "",
+        "Info": {},
+        "IsQA": true,
+        "Layer": "QC",
+        "OrigDataType": "byte",
+        "OrigValidMax": 10,
+        "OrigValidMin": 0,
+        "QualityLayers": "",
+        "QualityProductAndVersion": "",
+        "ScaleFactor": "",
+        "Units": "Class Flag",
+        "ValidMax": 10,
+        "ValidMin": 0,
+        "XSize": 2400,
+        "YSize": 2400
+      }
+    },
+    "MOD44B.061": {
+      "Cloud": {
+        "AddOffset": "",
+        "Available": true,
+        "DataType": "byte",
+        "Description": "Pixel cloud cover indicators",
+        "Dimensions": [
+          "time",
+          "YDim",
+          "XDim"
+        ],
+        "FillValue": null,
+        "FillValueAll": [
+          null
+        ],
+        "Group": "",
+        "Info": {},
+        "IsQA": true,
+        "Layer": "Cloud",
+        "OrigDataType": "byte",
+        "OrigValidMax": 255,
+        "OrigValidMin": 0,
+        "QualityLayers": "",
+        "QualityProductAndVersion": "",
+        "ScaleFactor": "",
+        "Units": "Bit Field",
+        "ValidMax": 255,
+        "ValidMin": 0,
+        "XSize": 4800,
+        "YSize": 4800
+      },
+      "Percent_NonTree_Vegetation": {
+        "AddOffset": "",
+        "Available": true,
+        "DataType": "byte",
+        "Description": "Percent of pixel that is nontree vegetation",
+        "Dimensions": [
+          "time",
+          "YDim",
+          "XDim"
+        ],
+        "FillValue": 253,
+        "FillValueAll": [
+          253
+        ],
+        "Group": "",
+        "Info": {},
+        "IsQA": false,
+        "Layer": "Percent_NonTree_Vegetation",
+        "OrigDataType": "byte",
+        "OrigValidMax": 100,
+        "OrigValidMin": 0,
+        "QualityLayers": "['Quality','Cloud']",
+        "QualityProductAndVersion": "MOD44B.061",
+        "ScaleFactor": "",
+        "Units": "Percent",
+        "ValidMax": 100,
+        "ValidMin": 0,
+        "XSize": 4800,
+        "YSize": 4800
+      },
+      "Percent_NonVegetated": {
+        "AddOffset": "",
+        "Available": true,
+        "DataType": "byte",
+        "Description": "Percent of pixel non vegetated",
+        "Dimensions": [
+          "time",
+          "YDim",
+          "XDim"
+        ],
+        "FillValue": 253,
+        "FillValueAll": [
+          253
+        ],
+        "Group": "",
+        "Info": {},
+        "IsQA": false,
+        "Layer": "Percent_NonVegetated",
+        "OrigDataType": "byte",
+        "OrigValidMax": 100,
+        "OrigValidMin": 0,
+        "QualityLayers": "['Quality','Cloud']",
+        "QualityProductAndVersion": "MOD44B.061",
+        "ScaleFactor": "",
+        "Units": "Percent",
+        "ValidMax": 100,
+        "ValidMin": 0,
+        "XSize": 4800,
+        "YSize": 4800
+      },
+      "Percent_NonVegetated_SD": {
+        "AddOffset": "",
+        "Available": true,
+        "DataType": "uint16",
+        "Description": "Standard deviation of percent not vegetated",
+        "Dimensions": [
+          "time",
+          "YDim",
+          "XDim"
+        ],
+        "FillValue": 0,
+        "FillValueAll": [
+          0
+        ],
+        "Group": "",
+        "Info": {},
+        "IsQA": false,
+        "Layer": "Percent_NonVegetated_SD",
+        "OrigDataType": "uint16",
+        "OrigValidMax": 10000,
+        "OrigValidMin": 0,
+        "QualityLayers": "['Quality','Cloud']",
+        "QualityProductAndVersion": "MOD44B.061",
+        "ScaleFactor": 0.01,
+        "Units": "Percent",
+        "ValidMax": 10000,
+        "ValidMin": 0,
+        "XSize": 4800,
+        "YSize": 4800
+      },
+      "Percent_Tree_Cover": {
+        "AddOffset": "",
+        "Available": true,
+        "DataType": "byte",
+        "Description": "Percent of pixel that is tree covered",
+        "Dimensions": [
+          "time",
+          "YDim",
+          "XDim"
+        ],
+        "FillValue": 253,
+        "FillValueAll": [
+          253
+        ],
+        "Group": "",
+        "Info": {},
+        "IsQA": false,
+        "Layer": "Percent_Tree_Cover",
+        "OrigDataType": "byte",
+        "OrigValidMax": 100,
+        "OrigValidMin": 0,
+        "QualityLayers": "['Quality','Cloud']",
+        "QualityProductAndVersion": "MOD44B.061",
+        "ScaleFactor": "",
+        "Units": "Percent",
+        "ValidMax": 100,
+        "ValidMin": 0,
+        "XSize": 4800,
+        "YSize": 4800
+      },
+      "Percent_Tree_Cover_SD": {
+        "AddOffset": "",
+        "Available": true,
+        "DataType": "uint16",
+        "Description": "Standard deviation of percent tree covered",
+        "Dimensions": [
+          "time",
+          "YDim",
+          "XDim"
+        ],
+        "FillValue": 0,
+        "FillValueAll": [
+          0
+        ],
+        "Group": "",
+        "Info": {},
+        "IsQA": false,
+        "Layer": "Percent_Tree_Cover_SD",
+        "OrigDataType": "uint16",
+        "OrigValidMax": 10000,
+        "OrigValidMin": 0,
+        "QualityLayers": "['Quality','Cloud']",
+        "QualityProductAndVersion": "MOD44B.061",
+        "ScaleFactor": 0.01,
+        "Units": "Percent",
+        "ValidMax": 10000,
+        "ValidMin": 0,
+        "XSize": 4800,
+        "YSize": 4800
+      },
+      "Quality": {
+        "AddOffset": "",
+        "Available": true,
+        "DataType": "byte",
+        "Description": "Quality Control indicators",
+        "Dimensions": [
+          "time",
+          "YDim",
+          "XDim"
+        ],
+        "FillValue": null,
+        "FillValueAll": [
+          null
+        ],
+        "Group": "",
+        "Info": {},
+        "IsQA": true,
+        "Layer": "Quality",
+        "OrigDataType": "byte",
+        "OrigValidMax": 255,
+        "OrigValidMin": 0,
+        "QualityLayers": "",
+        "QualityProductAndVersion": "",
+        "ScaleFactor": "",
+        "Units": "Bit Field",
+        "ValidMax": 255,
+        "ValidMin": 0,
+        "XSize": 4800,
+        "YSize": 4800
+      }
+    }
+  },
+  "notes": [
+    "Present不代表2026完整年度已发布。",
+    "MCD12Q1逐年分类差异不宜直接解释为真实变化。",
+    "MOD44B树冠覆盖度不是森林面积比例。",
+    "尚未确定研究边界、分母和QC方案；未提交下载任务。"
+  ]
+}
