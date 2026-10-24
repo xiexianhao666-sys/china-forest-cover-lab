@@ -318,9 +318,10 @@ def self_test(server: ThreadingHTTPServer, host: str, port: int, root: Path) -> 
         ("/%2e%2e/AGENTS.md", 404, ""),
         ("/nope.js", 404, ""),
     ]
-    for name in ("forest-2025.png", "china.geojson"):
+    assets = (("forest-2025.png", "image/png"), ("china-data.js", "text/javascript"))
+    for name, mime in assets:
         if (root / name).is_file():
-            cases.insert(5, (f"/{name}", 200, "image/png" if name.endswith(".png") else "application/geo+json"))
+            cases.insert(5, (f"/{name}", 200, mime))
     failures = 0
     log(f"{'路径':<30} {'状态':>5}  {'类型':<32} 结果")
     for path, expected_status, expected_type in cases:

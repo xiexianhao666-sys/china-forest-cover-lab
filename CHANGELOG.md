@@ -1,5 +1,11 @@
 # 更新记录
 
+## 2026-10-25 · 去掉重复的边界数据副本
+
+- 删除 `dist/china.geojson`：内容与 `dist/china-data.js` 内嵌的 `CHINA_GEOJSON` 完全相同，页面只加载后者，前者仅被启动器自检当作存在性检查。
+- `tools/launcher.py` 自检改为校验 `dist/china-data.js`（`text/javascript`），自检项数不变。
+- 未改动任何统计口径、数据与页面行为。
+
 ## 2026-10-24 · 单壳版面与本地密钥入口
 
 - 呈现层换成单壳版面：新增 `dist/shell.css`（主壳、控制带、分析栏、质感层）与 `dist/auth.css`，`dist/index.html` 引入两者及 `auth-panel.js`；工具条、数据提示、密钥条压成三条控制带，分析栏去掉卡片边框与底色。
