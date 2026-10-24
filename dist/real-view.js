@@ -7,7 +7,8 @@ export function mountReal(ctx, data, metadata) {
   prepareDataLayout();
   mountCatalog(ctx, metadata);
   $("map").innerHTML = boundaryMap();
-  const good = rows.filter((r) => r.status === "exploratory_estimate");
+  document.querySelector(".api-details").open = false;
+  $("analysisDock").prepend($("trendPanel"));
   let selected = rows.length - 1,
     play = null;
   document.title = "中国森林类面积 · AppEEARS实测产品";
@@ -30,7 +31,7 @@ export function mountReal(ctx, data, metadata) {
   $("rate").removeAttribute("data-current");
   $("delta").removeAttribute("data-current");
   document.querySelector("#trendPanel summary").firstChild.textContent =
-    "年度分类占比";
+    "森林类面积构成";
   document.querySelector(".playback-heading span").textContent = "真实年度";
   document.querySelector(".playback-panel p").textContent =
     "仅播放已完成年度；过渡不生成新观测";
@@ -98,80 +99,34 @@ export function mountReal(ctx, data, metadata) {
   $("chartExport").hidden = false;
   $("chartExport").disabled = false;
   $("chartExport").onclick = () =>
-    download($("trend").innerHTML, "image/svg+xml", "年度分类占比.svg");
+    download($("trend").innerHTML, "image/svg+xml", "森林类面积构成.svg");
   function drawTrend() {
-    const W = 340,
-      H = 235,
-      L = 42,
-      R = 15,
-      T = 25,
-      B = 38;
-    const x = (y) =>
-      rows.length === 1
-        ? 185
-        : L +
-          ((y - rows[0].year) / (rows.at(-1).year - rows[0].year)) *
-            (W - L - R);
-    const y = (v) => H - B - (v / 30) * (H - T - B);
-    let s =
-      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 235" role="img" aria-label="全国森林类占有效分类面积的年度比例"><rect x="42" y="25" width="283" height="172" fill="#f0f2f4"/>';
-    for (const tick of [0, 10, 20, 30])
-      s +=
-        '<line x1="42" x2="325" y1="' +
-        y(tick) +
-        '" y2="' +
-        y(tick) +
-        '" stroke="white"/><text x="35" y="' +
-        (y(tick) + 4) +
-        '" text-anchor="end" font-size="11" fill="#667580">' +
-        tick +
-        "</text>";
-    let pen = false;
-    const d = rows
-      .map((r) => {
-        if (r.forest_share_of_valid_classified_area_pct === null) {
-          pen = false;
-          return "";
-        }
-        const text =
-          (pen ? "L" : "M") +
-          x(r.year) +
-          "," +
-          y(r.forest_share_of_valid_classified_area_pct);
-        pen = true;
-        return text;
-      })
-      .join(" ");
-    s += '<path d="' + d + '" stroke="#20704e" stroke-width="2" fill="none"/>';
-    for (const r of good) {
-      const active = r.year === rows[selected].year;
-      s +=
-        '<circle cx="' +
-        x(r.year) +
-        '" cy="' +
-        y(r.forest_share_of_valid_classified_area_pct) +
-        '" r="' +
-        (active ? 4 : 2) +
-        '" fill="' +
-        (active ? "white" : "#20704e") +
-        '" stroke="#20704e"><title>' +
-        r.year +
-        "年 " +
-        r.forest_share_of_valid_classified_area_pct.toFixed(2) +
-        "%</title></circle>";
+    const r = rows[selected];
+    const share = r.forest_share_of_valid_classified_area_pct;
+    $("chartExport").disabled = !Number.isFinite(share);
+    $("chartExport").title = "导出面积构成饼图";
+    if (!Number.isFinite(share)) {
+      $("trend").innerHTML =
+        '<p class="api-empty">有效数据不足，暂不展示面积构成。</p>';
+      return;
     }
-    for (const year of [
-      ...new Set([rows[0].year, rows[selected].year, rows.at(-1).year]),
-    ])
-      s +=
-        '<text x="' +
-        x(year) +
-        '" y="215" text-anchor="middle" font-size="10" fill="#667580">' +
-        year +
-        "</text>";
-    s +=
-      '<text x="42" y="15" font-size="10" fill="#506471">森林类占比（%）</text></svg>';
-    $("trend").innerHTML = s;
+    const angle = (share / 100) * Math.PI * 2;
+    const x = 160 + 91 * Math.sin(angle);
+    const y = 108 - 91 * Math.cos(angle);
+    const sector =
+      share === 100
+        ? '<circle cx="160" cy="108" r="91" fill="#20704e"/>'
+        : share === 0
+          ? ""
+          : `<path d="M160 108 L160 17 A91 91 0 ${share > 50 ? 1 : 0} 1 ${x} ${y} Z" fill="#20704e" stroke="white" stroke-width="2"><title>森林类 ${share.toFixed(2)}%</title></path>`;
+    $("trend").innerHTML =
+      `<svg class="share-pie" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 296" role="img" aria-label="${r.year}年森林类占比 ${share.toFixed(2)}%，其他有效分类 ${(100 - share).toFixed(2)}%">
+      <circle cx="160" cy="108" r="91" fill="#d8e2e8"><title>其他有效分类（含水体） ${(100 - share).toFixed(2)}%</title></circle>${sector}
+      <g font-family="Microsoft YaHei, sans-serif" font-size="13" fill="#263746">
+        <rect x="14" y="221" width="12" height="12" fill="#20704e"/><text x="34" y="232">森林类（1—5类）</text><text x="306" y="232" text-anchor="end" font-weight="700">${share.toFixed(2)}%</text>
+        <rect x="14" y="249" width="12" height="12" fill="#d8e2e8" stroke="#8a9da9"/><text x="34" y="260">其他有效分类（含水体）</text><text x="306" y="260" text-anchor="end">${(100 - share).toFixed(2)}%</text>
+        <text x="160" y="288" text-anchor="middle" font-size="11" fill="#526575">分母：通过质量筛选的有效分类面积</text>
+      </g></svg>`;
   }
   function renderReal() {
     const r = rows[selected];
@@ -190,10 +145,7 @@ export function mountReal(ctx, data, metadata) {
     animateNumber("delta", r.valid_classified_area_fraction * 100, "%");
     $("deltaNote").textContent =
       "森林类面积 " + (r.forest_area_km2 / 10000).toFixed(2) + " 万km²";
-    $("trendSubtitle").textContent =
-      rows.length === 1
-        ? "仅1个年度，不连接为趋势线"
-        : rows[0].year + "—" + rows.at(-1).year + " · 年度分类结果";
+    $("trendSubtitle").textContent = r.year + "年 · 全国研究范围";
     const svg = $("map").querySelector("svg");
     svg.setAttribute("aria-label", r.year + "年真实森林分类分布，非省级覆盖率");
     svg.querySelector("title").textContent =

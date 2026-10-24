@@ -70,6 +70,15 @@ test("real: actual snapshot, raster, method and JSON export", async ({
   await page.goto("/");
   await ready(page, "real");
   await expect(page.locator("#rate")).toContainText("12.35");
+  await expect(page.locator(".share-pie")).toHaveAttribute(
+    "aria-label",
+    /12\.35%.*87\.65%/,
+  );
+  const chartDownload = page.waitForEvent("download");
+  await page.locator("#chartExport").click();
+  expect(
+    await fs.readFile(await (await chartDownload).path(), "utf8"),
+  ).toContain("分母：通过质量筛选的有效分类面积");
   await expect(page.locator("#map .real-raster")).toHaveAttribute(
     "href",
     "forest-2025.png",
@@ -166,4 +175,12 @@ test("layout and reduced motion", async ({ page }, info) => {
     ),
   ).toBe(true);
   await page.screenshot({ path: info.outputPath("real.png"), fullPage: true });
+  if (info.project.name === "desktop") {
+    await page.setViewportSize({ width: 983, height: 1244 });
+    await expect(page.locator(".share-pie")).toBeVisible();
+    await page.screenshot({
+      path: info.outputPath("tablet.png"),
+      fullPage: true,
+    });
+  }
 });

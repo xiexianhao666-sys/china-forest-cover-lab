@@ -1010,3 +1010,100 @@ input:disabled {
 .real-raster {
   pointer-events: none;
 }
+
+/* Functional surfaces: map, composition, service status and playback. */
+.workspace {
+  background: #f2f6f8;
+  border-color: #9daeba;
+  box-shadow: 0 2px 8px #203f5410;
+}
+.map-heading {
+  border-left: 4px solid #225a86;
+  padding-left: 12px;
+}
+.map-annotation {
+  background: #fff;
+  border: 1px solid #b1c3c1;
+  border-left: 4px solid #20704e;
+  box-shadow: 0 2px 6px #203f5410;
+}
+.map-annotation span,
+.map-annotation small {
+  color: #526575;
+}
+.analysis-dock {
+  gap: 16px;
+}
+.analysis-dock details {
+  border: 1px solid #9eafbb;
+  box-shadow: 0 2px 5px #203f5410;
+}
+.analysis-dock summary {
+  background: #e2ebf2;
+  color: #163e5d;
+  border-left: 4px solid #225a86;
+}
+#trendPanel summary {
+  background: #deeee5;
+  color: #164f38;
+  border-left-color: #20704e;
+}
+#rankingPanel summary {
+  background: #eee8f4;
+  border-left-color: #735189;
+  color: #574065;
+}
+.analysis-dock .api-details summary {
+  background: #fff0d9;
+  border-left-color: #ad7221;
+  color: #704710;
+}
+.api-details p {
+  color: #4c5e6a;
+}
+.api-details progress {
+  accent-color: #ad7221;
+}
+.playback-panel {
+  background: #e7eff7;
+  border: 1px solid #8ca6bc;
+  border-top: 4px solid #225a86;
+}
+.playback-heading strong {
+  color: #163e5d;
+}
+.playback-heading span,
+.playback-panel p {
+  color: #4c6172;
+}
+.map-bottom {
+  background: #ffffffed;
+  padding: 10px;
+  border: 1px solid #c6d2db;
+  width: fit-content;
+  max-width: calc(100% - 32px);
+}
+.share-pie {
+  display: block;
+  width: 100%;
+  max-height: 330px;
+}
+.share-pie path {
+  transform-origin: 160px 108px;
+  animation: pie-reveal 0.5s ease-out;
+}
+@keyframes pie-reveal {
+  from {
+    opacity: 0.3;
+    transform: scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .share-pie path {
+    animation: none;
+  }
+}
