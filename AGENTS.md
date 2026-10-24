@@ -1,11 +1,10 @@
 # Project update policy
 
-User explicitly requests that EVERY project update be recorded and pushed to their GitHub repository.
-
-- Preserve existing history. Use descriptive commits and push after each completed, verified update. Never force-push.
-- The Sites editing checkout is `../outputs/forest-cover-demo`; the active data pipeline is `../integrations/appeears` relative to this repository. This repository archives both.
-- After changes in those locations, run `scripts/Sync-and-push.ps1 -Message "具体说明此次更新"` from this repository. It copies an allowlist, audits credentials, commits and pushes.
-- Keep this README and CHANGELOG accurate. Record material behavior/data/method changes and validation.
-- Never upload credentials, encrypted tokens, browser profiles, virtual environments, raw downloads or local runtime directories. Published statistics are allowed, with their definitions and provenance.
-- Sites publication and GitHub pushes are separate operations. Verify each required destination and report failures accurately. Do not claim synchronization if push failed.
-- If GitHub authentication expires, prepare the change locally and request the required user login; do not ask the user to paste a token in chat.
+- This repository is the only development source. Run all tools relative to its root; do not copy from sibling outputs/integrations directories.
+- The user requires every completed update to have descriptive Git commits and a GitHub push. Preserve history and never force-push.
+- Update CHANGELOG.md with behavior, methodology and validation changes. Keep formatting-only changes separate when practical.
+- scripts/Sync-and-push.ps1 validates origin, runs checks, audits credentials, commits and pushes this checkout. It no longer copies external source files. Use -SkipTests only after the same changes have already passed relevant checks.
+- GitHub CI tests demo, pending, real and mode transitions without NASA credentials. Install dependencies and browser before local tests; see README.
+- Sites publication is separate from GitHub. Use the Sites skill and native publishing workflow; supply the verified checkout content as a one-way publication input. Never develop in the publication checkout or copy its old files back here.
+- Never commit credentials, .secrets, .env, .venv, raw raster downloads or runtime caches. Preserve source boundary bytes and hashes; normalize labels using the explicit registry.
+- If authentication or publication fails, retain the local commit and report which destination is incomplete. Do not claim a push or deployment succeeded without evidence.

@@ -47,5 +47,5 @@ def export(site):
 
 if __name__ == '__main__':
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument('--site', required=True, type=Path)
+    p.add_argument('--site', default=ROOT.parents[1], type=Path, help='Repository root; defaults to this checkout')
     export(p.parse_args().site)

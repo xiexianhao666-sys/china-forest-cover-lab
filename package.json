@@ -1,0 +1,19 @@
+{
+  "name": "china-forest-cover-lab",
+  "version": "0.4.0",
+  "private": true,
+  "scripts": {
+    "start": "node scripts/serve.cjs",
+    "test": "playwright test",
+    "format": "prettier --write dist/style.css dist/app.js dist/ui.js dist/map.js dist/demo-view.js dist/api-mode.js dist/real-view.js dist/catalog.js tests/*.cjs qa.cjs scripts/*.cjs playwright.config.cjs",
+    "check:format": "prettier --check dist/style.css dist/app.js dist/ui.js dist/map.js dist/demo-view.js dist/api-mode.js dist/real-view.js dist/catalog.js tests/*.cjs qa.cjs scripts/*.cjs playwright.config.cjs"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.64.1",
+    "prettier": "^3.9.10"
+  },
+  "packageManager": "pnpm@11.25.0"
+}

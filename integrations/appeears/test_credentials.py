@@ -1,8 +1,10 @@
 import tempfile
 import unittest
+import os
 from pathlib import Path
 from credential_store import crypt, read_token, write_token
 
+@unittest.skipUnless(os.name == 'nt', 'DPAPI credential cache requires Windows')
 class CredentialTests(unittest.TestCase):
     def test_encrypted_roundtrip_and_expiry(self):
         with tempfile.TemporaryDirectory() as folder:

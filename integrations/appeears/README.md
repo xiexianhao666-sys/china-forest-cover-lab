@@ -31,9 +31,9 @@ QC保留0、2、4、5、6、7、8、9；8和9单独记录。未分类、缺少�
 
 ## 网页快照
 
-    .venv/Scripts/python.exe publish_snapshot.py --site D:/GPTworkplace/outputs/forest-cover-demo
+    .venv/Scripts/python.exe publish_snapshot.py
 
-生成无凭据、无本地路径的JSON/JS快照及年度PNG。导出不等于发布，仍需Sites源码同步和部署。网页不访问本地令牌，也不会自动更新后台统计。旧合成样品仅在 ?demo=1 中展示。
+在此目录运行时，默认输出到当前仓库的dist，可用--site指定另一个仓库根目录。生成无凭据、无本地路径的JSON/JS快照及年度PNG。导出不等于发布，仍需Sites源码同步和部署。网页不访问本地令牌，也不会自动更新后台统计。旧合成样品仅在 ?demo=1 中展示。
 
 ## 测试
 
@@ -41,6 +41,6 @@ QC保留0、2、4、5、6、7、8、9；8和9单独记录。未分类、缺少�
 
 覆盖面积分母、孔洞和边界掩膜、缺失值、QC、投影、部分瓦片、路径安全和损坏文件校验。网站目录 node qa.cjs 检查交互及桌面、手机布局。
 
-依赖已安装在项目.venv：rasterio、numpy、shapely、pyproj、requests。认证脚本仅依赖Python标准库。
+独立克隆后需按仓库根目录README安装依赖：rasterio、numpy、shapely、pyproj、requests。认证脚本仅依赖Python标准库。
 
 来源：[NASA API](https://appeears.earthdatacloud.nasa.gov/api/)；[产品指南](https://lpdaac.usgs.gov/documents/1409/MCD12_User_Guide_V61.pdf)。

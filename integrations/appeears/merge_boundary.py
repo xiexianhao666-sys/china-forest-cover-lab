@@ -5,6 +5,7 @@ from pathlib import Path
 from shapely.geometry import shape, mapping
 from shapely.ops import unary_union, transform
 from pyproj import Transformer
+from boundary_names import normalize_features
 
 root = Path(__file__).resolve().parent / 'boundaries'
 source = root / 'chn-adm1-source.geojson'
@@ -16,10 +17,13 @@ geometries = [shape(f['geometry']) for f in doc['features']]
 assert all(g.is_valid and not g.is_empty for g in geometries)
 merged = unary_union(geometries)
 assert merged.is_valid
-names = [f['properties']['shapeName'] for f in doc['features']]
+regions = normalize_features(doc['features'])
+names = [region['canonical_name'] for region in regions]
 output = {'type': 'FeatureCollection', 'features': [{'type': 'Feature', 'properties': {'name': 'China_research_boundary'}, 'geometry': mapping(merged)}]}
 (root / 'chn-national.geojson').write_text(json.dumps(output), encoding='utf-8')
 projected = transform(Transformer.from_crs(4326, '+proj=sinu +R=6371007.181 +units=m', always_xy=True).transform, merged.segmentize(.05))
 provenance = {'source_sha256': digest, 'source': 'https://www.geoboundaries.org/api/current/gbOpen/CHN/ADM1/', 'commit': '9469f09', 'boundary_year': 2019, 'license': 'Public Domain', 'attribution': 'geoBoundaries / Wikimedia Commons', 'feature_names': names, 'operation': 'unary_union; no simplification or repair', 'area_km2_native_modis_sphere': projected.area / 1e6, 'bounds': merged.bounds, 'limitations': 'Generalized research boundary, not an official standard map; narrow islands and coastal details may be omitted.'}
+provenance['feature_source_names'] = [region['source_name'] for region in regions]
+provenance['regions'] = regions
 (root / 'provenance.json').write_text(json.dumps(provenance, ensure_ascii=False, indent=2), encoding='utf-8')
 print(json.dumps(provenance, ensure_ascii=True))
