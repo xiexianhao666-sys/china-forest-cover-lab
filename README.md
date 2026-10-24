@@ -1,6 +1,6 @@
-# 中国森林遥感调查
+# 中国森林覆盖变化
 
-基于NASA AppEEARS的森林类面积调查学习项目。本仓库是唯一开发源，可独立克隆、运行和测试，不依赖任何相邻工作目录。
+基于NASA AppEEARS的森林类面积调查学习项目。本仓库是唯一开发源，可独立克隆、运行和测试，不依赖任何相邻工作目录。没有注册相关账号请先注册。
 
 网页：https://china-forest-cover-lab.lushchub35.chatgpt.site/
 
@@ -74,4 +74,4 @@ MCD12Q1.061的LC_Type1 1—5类计为森林类，分母为通过质量筛选的�
 
 等价写法是 `python tools\launcher.py`，两者行为一致。要打包成内嵌 `dist\` 的单文件 exe，见 [tools/README.md](tools/README.md)。只有这个本地入口会显示 AppEEARS 密钥栏，线上静态站点拿不到接口会自动隐藏。
 
-每次更新记录于 Git 与 CHANGELOG.md；凭据、虚拟环境、原始栅格、runtime 和浏览器测试缓存不入库。
+每次更新会记录于 Git 与 CHANGELOG.md；凭据、虚拟环境、原始栅格、runtime 和浏览器测试缓存默认不入库。
