@@ -5,6 +5,7 @@
 *.html text eol=lf
 *.md text eol=lf
 *.ps1 text eol=lf
+*.bat text eol=crlf
 # Preserve exact bytes for pinned boundary provenance hashes.
 *.geojson -text
 *.png -text

@@ -1,5 +1,14 @@
 # 更新记录
 
+## 2026-10-24 · 零依赖本地启动器
+
+- 新增 `tools/launcher.py`：仅用标准库起只读静态服务并打开默认浏览器，默认入口为真实数据快照，支持 `--demo`、`--pending`、`--port`、`--host`、`--root`、`--no-browser`、`--self-test`。
+- 端口被占用时在后续 19 个端口内顺延；路径含 `..`（含 `%2e%2e` 编码）一律 404；响应禁用缓存，数据更新后强刷即生效；缺 `index.html` 退出码 2，端口耗尽退出码 3。
+- 新增 `tools/start-windows.bat` 双击入口，按 `python` → `py -3` → `E:\python\python.exe` 顺序探测解释器。
+- 新增 `tools/build_exe.ps1`：可选地用 PyInstaller 打包内嵌 `dist/` 的 Windows 单文件 exe，产物写入 `tools/release/`，已加入 `.gitignore`。
+- 不改动 `dist/` 任何文件、前端行为、数据与统计口径；`pnpm start` 仍是官方入口，本启动器是零 Node 依赖的替代。
+- 验证：`--self-test` 10 项全部通过（首页、JS、CSS、JSON、GeoJSON、PNG、`?demo=1`、编码穿越 404、缺失文件 404）；实测 `Invoke-WebRequest` 返回 200 与正确 MIME；缺 `dist` 退出码 2；3000 被占用时自动取 3001。
+
 ## 2026-10-24 · 恢复完整分析功能并加载历史年度
 
 - 保留年度趋势、区域变化比较和两期空间对比，饼图独立新增；演示、真实和待数据三态都保留入口，缺失值明确显示为待完成。
