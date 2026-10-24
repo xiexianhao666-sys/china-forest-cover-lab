@@ -58,12 +58,20 @@ MCD12Q1.061的LC_Type1 1—5类计为森林类，分母为通过质量筛选的�
 
 概化研究边界未充分表示狭小岛屿及南海岛礁。年度分类差异不能直接证明真实森林增减；2026年完整年度数据未接入。NASA、geoBoundaries及DataV的来源与许可说明保留在数据元信息中。
 
-## 提交与发布
+## 快速打开（tools/）
 
-    ./scripts/Sync-and-push.ps1 -Message '描述本次修改及验证'
+没装 Node 也能看：双击
 
-该命令仅检查并提交当前仓库，推送到GitHub；不会从外部目录复制文件，也不会部署Sites。已运行同样检查时可使用-SkipTests避免重复测试。
+    tools\start-windows.bat
 
-Sites发布另按其工具流程执行：打开发布仓库，将本仓库的dist及同一站点hosting配置作为单向发布输入，再同步、打包、部署并核对结果。GitHub开发目录与Sites发布目录用途不同；发布目录不是开发源。
+脚本按 `python` → `py -3` → `E:\python\python.exe` 顺序找解释器，起只读服务并打开默认浏览器（默认 http://127.0.0.1:3000/，端口被占用则自动顺延）。命令行参数：
 
-每次更新记录于Git及CHANGELOG.md。凭据、虚拟环境、原始栅格、runtime和浏览器测试缓存不上传。
+    start-windows.bat --demo        :: 合成样品      /?demo=1
+    start-windows.bat --pending     :: 接入等待      /?mode=pending
+    start-windows.bat --port 8080   :: 换起始端口
+    start-windows.bat --no-browser  :: 只起服务，不开浏览器
+    start-windows.bat --self-test   :: 跑 11 项接口自检后退出
+
+等价写法是 `python tools\launcher.py`，两者行为一致。要打包成内嵌 `dist\` 的单文件 exe，见 [tools/README.md](tools/README.md)。只有这个本地入口会显示 AppEEARS 密钥栏，线上静态站点拿不到接口会自动隐藏。
+
+每次更新记录于 Git 与 CHANGELOG.md；凭据、虚拟环境、原始栅格、runtime 和浏览器测试缓存不入库。
