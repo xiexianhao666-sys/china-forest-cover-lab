@@ -115,6 +115,8 @@ export function createContext() {
   };
 }
 export function mountShell() {
+  $("rankingPanel").open = true;
+  $("comparison").open = true;
   $("dockToggle").onclick = () => setDock($("analysisDock").hidden);
   $("sourceBtn").onclick = () => $("sourceDialog").showModal();
   $("sourceDialog").onclick = (e) => {

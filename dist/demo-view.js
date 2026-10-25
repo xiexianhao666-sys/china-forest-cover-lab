@@ -201,7 +201,7 @@ export function mountDemo(ctx) {
     });
   }
   function trend() {
-    const W = 340,
+    const W = innerWidth <= 600 ? 340 : 600,
       H = 244,
       L = 43,
       R = 16,
@@ -281,7 +281,7 @@ export function mountDemo(ctx) {
     s +=
       '<path d="' +
       line +
-      '" fill="none" stroke="#24758a" stroke-width="2"/>' +
+      '" fill="none" stroke="#2868bc" stroke-width="2"/>' +
       arr
         .map(
           (p) =>
@@ -289,7 +289,7 @@ export function mountDemo(ctx) {
             x(p.y) +
             '" cy="' +
             z(p.v) +
-            '" r="1.8" fill="#24758a"><title>' +
+            '" r="1.8" fill="#2868bc"><title>' +
             p.y +
             "年：" +
             p.v.toFixed(2) +
@@ -322,7 +322,7 @@ export function mountDemo(ctx) {
       (H - B) +
       '" stroke="#9eabb5"/><text x="' +
       L +
-      '" y="14" font-size="10" fill="#506471">覆盖比例（%）</text><text x="185" y="240" font-size="10" text-anchor="middle" fill="#74838d">年份 · 合成演示</text>';
+      '" y="14" font-size="10" fill="#506471">覆盖比例（%）</text><text x="300" y="240" font-size="10" text-anchor="middle" fill="#74838d">年份 · 合成演示</text>';
     updateSVG(
       "trend",
       '<svg id="trendSVG" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' +
@@ -385,7 +385,7 @@ export function mountDemo(ctx) {
     s += arr
       .map((a, i) => {
         const y = T + i * 27,
-          c = a.v < 0 ? "#b2572d" : "#24758a";
+          c = a.v < 0 ? "#b2572d" : "#2868bc";
         return (
           '<g class="rank-row" data-id="' +
           a.id +
@@ -452,6 +452,9 @@ export function mountDemo(ctx) {
     });
   }
   mountComposition();
+  matchMedia("(max-width: 600px)").addEventListener("change", () => render(), {
+    signal: ctx.signal,
+  });
   function render() {
     $("compositionSubtitle").textContent =
       state.end + "年 · " + name(state.region) + " · 合成演示";

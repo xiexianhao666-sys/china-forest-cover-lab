@@ -303,6 +303,11 @@ export function mountReal(ctx, data, metadata) {
     mode = "rate";
     renderReal();
   };
+  matchMedia("(max-width: 600px)").addEventListener(
+    "change",
+    () => renderReal(),
+    { signal: ctx.signal },
+  );
   renderReal();
   return pauseReal;
 }

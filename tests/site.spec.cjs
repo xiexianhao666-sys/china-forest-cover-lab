@@ -49,9 +49,11 @@ test("demo: region selection, years, ranking, comparison and export", async ({
   await page.selectOption("#start", "2010");
   await page.locator("#changeMode").click();
   await expect(page.locator("#mapSubtitle")).toContainText("百分点");
-  await page.locator("#rankingPanel summary").click();
+  if (!(await page.locator("#rankingPanel").evaluate((el) => el.open)))
+    await page.locator("#rankingPanel summary").click();
   await expect(page.locator(".rank-row")).toHaveCount(8);
-  await page.locator("#comparison summary").click();
+  if (!(await page.locator("#comparison").evaluate((el) => el.open)))
+    await page.locator("#comparison summary").click();
   await expect(page.locator("#miniStart svg")).toHaveCount(2);
   const event = page.waitForEvent("download");
   await page.locator("#exportBtn").click();
@@ -166,15 +168,20 @@ test("layout and reduced motion", async ({ page }, info) => {
       () => document.documentElement.scrollWidth <= innerWidth,
     ),
   ).toBe(true);
-  if (info.project.name === "desktop")
-    expect(
-      await page.evaluate(
-        () => document.documentElement.scrollHeight <= innerHeight,
-      ),
-    ).toBe(true);
+  if (info.project.name === "desktop") {
+    const map = await page.locator("#map").boundingBox();
+    const trend = await page.locator("#trend svg").boundingBox();
+    expect(map.width / map.height).toBeCloseTo(714 / 523, 1);
+    expect(trend.width).toBeGreaterThan(550);
+    await expect(page.locator("#comparison")).toHaveAttribute("open", "");
+  }
   await page.screenshot({ path: info.outputPath("demo.png"), fullPage: true });
   await page.goto("/");
   await ready(page, "real");
+  await expect(page.locator("#trend .tl-line:not(.cmp)")).toHaveCSS(
+    "stroke-dashoffset",
+    "0px",
+  );
   expect(
     await page.evaluate(
       () => document.documentElement.scrollWidth <= innerWidth,
@@ -189,6 +196,42 @@ test("layout and reduced motion", async ({ page }, info) => {
       fullPage: true,
     });
   }
+});
+
+test("local auth layout and Shift province comparison remain usable", async ({
+  page,
+}, info) => {
+  await page.route("**/api/auth/status", (r) =>
+    r.fulfill({ json: { state: "none" } }),
+  );
+  await page.goto("/");
+  await ready(page, "real");
+  await expect(page.locator("#authHost")).toBeVisible();
+  await page.locator(".auth-action").click();
+  await expect(page.locator(".auth-form")).toBeVisible();
+  const auth = await page.locator("#authHost").boundingBox();
+  const workspace = await page.locator("#overview").boundingBox();
+  expect(workspace.y).toBeGreaterThanOrEqual(auth.y + auth.height);
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= innerWidth,
+    ),
+  ).toBe(true);
+  await page.locator("[data-close]").click();
+  await page.selectOption("#region", "330000");
+  await page
+    .locator('#map .province[data-id="350000"]')
+    .dispatchEvent("click", { shiftKey: true });
+  await expect(page.locator("#trendSubtitle")).toContainText("对比");
+  await expect(page.locator("#trend .tl-line.cmp")).toHaveCount(1);
+  await page.locator("#dockToggle").click();
+  await expect(page.locator("#analysisDock")).toBeHidden();
+  await page.locator("#dockToggle").click();
+  await expect(page.locator("#comparison")).toBeVisible();
+  await page.screenshot({
+    path: info.outputPath("local-auth.png"),
+    fullPage: true,
+  });
 });
 
 test("real: all analysis panels stay available and years/regions link together", async ({
@@ -225,7 +268,8 @@ test("real: all analysis panels stay available and years/regions link together",
     "comparison",
   ])
     await expect(page.locator("#" + id)).not.toHaveAttribute("hidden");
-  await page.locator("#rankingPanel summary").click();
+  if (!(await page.locator("#rankingPanel").evaluate((el) => el.open)))
+    await page.locator("#rankingPanel summary").click();
   await expect(page.locator(".real-rank-row")).toHaveCount(1);
   await expect(page.locator(".real-rank-row")).toContainText("+10.00");
   await page.locator(".real-rank-row").click();
@@ -234,7 +278,8 @@ test("real: all analysis panels stay available and years/regions link together",
     "aria-label",
     /40\.00%/,
   );
-  await page.locator("#comparison summary").click();
+  if (!(await page.locator("#comparison").evaluate((el) => el.open)))
+    await page.locator("#comparison summary").click();
   await expect(page.locator("#miniStart image")).toHaveAttribute(
     "href",
     "forest-2024.png",

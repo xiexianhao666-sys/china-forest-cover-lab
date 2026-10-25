@@ -52,6 +52,7 @@ export function mountAnalysis(ctx, data, state, selectRegion) {
       $("trend").innerHTML = '<p class="api-empty">该区域年度统计待完成。</p>';
       return;
     }
+    const W = innerWidth <= 600 ? 340 : 600;
     const first = data.records[0].year,
       last = data.records.at(-1).year;
     const allShares = [...good, ...cmpGood].map(share);
@@ -60,12 +61,12 @@ export function mountAnalysis(ctx, data, state, selectRegion) {
       Math.max(10, Math.ceil((Math.max(...allShares) * 1.15) / 10) * 10),
     );
     const x = (y) =>
-        first === last ? 190 : 45 + ((y - first) / (last - first)) * 275,
+        first === last ? W / 2 : 45 + ((y - first) / (last - first)) * (W - 65),
       y = (v) => 190 - (v / max) * 160;
-    let svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 235" role="img" aria-label="${esc(label())}年度分类占比趋势"><rect x="45" y="30" width="275" height="160" fill="#f0f3f5"/><rect x="${x(s.baseline)}" y="30" width="${Math.max(0, x(s.year) - x(s.baseline))}" height="160" fill="#deeee5"/>`;
+    let svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} 235" role="img" aria-label="${esc(label())}年度分类占比趋势"><rect x="45" y="30" width="${W - 65}" height="160" fill="#f7faff"/><rect x="${x(s.baseline)}" y="30" width="${Math.max(0, x(s.year) - x(s.baseline))}" height="160" fill="#e6effb"/>`;
     for (let i = 0; i <= 4; i++) {
       const v = (max * i) / 4;
-      svg += `<line x1="45" x2="320" y1="${y(v)}" y2="${y(v)}" stroke="white"/><text x="38" y="${y(v) + 4}" text-anchor="end" font-size="10" fill="#526575">${v}%</text>`;
+      svg += `<line x1="45" x2="${W - 20}" y1="${y(v)}" y2="${y(v)}" stroke="white"/><text x="38" y="${y(v) + 4}" text-anchor="end" font-size="10" fill="#526575">${v}%</text>`;
     }
     let pen = false,
       previous = null,
@@ -84,9 +85,9 @@ export function mountAnalysis(ctx, data, state, selectRegion) {
       pen = true;
       previous = r.year;
     }
-    svg += `<path class="tl-line" d="${d}" fill="none" stroke="#20704e" stroke-width="2" pathLength="1"/>`;
+    svg += `<path class="tl-line" d="${d}" fill="none" stroke="#2868bc" stroke-width="2" pathLength="1"/>`;
     for (const r of good)
-      svg += `<circle class="tl-dot" cx="${x(r.year)}" cy="${y(share(r))}" r="${r.year === s.year ? 4 : 2}" fill="${r.year === s.year ? "white" : "#20704e"}" stroke="#20704e"><title>${r.year}年 ${share(r).toFixed(2)}%</title></circle>`;
+      svg += `<circle class="tl-dot" cx="${x(r.year)}" cy="${y(share(r))}" r="${r.year === s.year ? 4 : 2}" fill="${r.year === s.year ? "white" : "#2868bc"}" stroke="#2868bc"><title>${r.year}年 ${share(r).toFixed(2)}%</title></circle>`;
     if (cmpGood.length) {
       let cpen = false,
         cprev = null,
@@ -105,10 +106,10 @@ export function mountAnalysis(ctx, data, state, selectRegion) {
         cpen = true;
         cprev = r.year;
       }
-      svg += `<path class="tl-line cmp" d="${cd}" fill="none" stroke="#9c5a2b" stroke-width="2" stroke-dasharray="5 4" pathLength="1"/>`;
+      svg += `<path class="tl-line cmp" d="${cd}" fill="none" stroke="#be6926" stroke-width="2" stroke-dasharray="5 4"/>`;
       for (const r of cmpGood)
-        svg += `<circle class="tl-dot cmp" cx="${x(r.year)}" cy="${y(share(r))}" r="2" fill="#9c5a2b"><title>${r.year}年 ${share(r).toFixed(2)}%</title></circle>`;
-      svg += `<g font-size="10" fill="#526575"><line x1="52" y1="20" x2="76" y2="20" stroke="#20704e" stroke-width="2"/><text x="82" y="23">${esc(label())}</text><line x1="150" y1="20" x2="174" y2="20" stroke="#9c5a2b" stroke-width="2" stroke-dasharray="5 4"/><text x="180" y="23">${esc(cmpRegion.name_zh)}</text></g>`;
+        svg += `<circle class="tl-dot cmp" cx="${x(r.year)}" cy="${y(share(r))}" r="2" fill="#be6926"><title>${r.year}年 ${share(r).toFixed(2)}%</title></circle>`;
+      svg += `<g font-size="10" fill="#526575"><line x1="52" y1="20" x2="76" y2="20" stroke="#2868bc" stroke-width="2"/><text x="82" y="23">${esc(label())}</text><line x1="150" y1="20" x2="174" y2="20" stroke="#be6926" stroke-width="2" stroke-dasharray="5 4"/><text x="180" y="23">${esc(cmpRegion.name_zh)}</text></g>`;
     }
     const ticks = [first, last];
     for (let year = Math.ceil(first / 5) * 5; year < last; year += 5)
@@ -151,7 +152,7 @@ export function mountAnalysis(ctx, data, state, selectRegion) {
       list
         .map(
           (r) =>
-            `<button class="real-rank-row" data-region="${r.region_id}" aria-label="查看${esc(r.name_zh)}"><span>${esc(r.name_zh)}</span><span class="rank-track"><i style="width:${(Math.abs(r.delta) / max) * 100}%;background:${r.delta < 0 ? "#aa5a31" : "#20704e"}"></i></span><b>${r.delta >= 0 ? "+" : ""}${r.delta.toFixed(2)}</b></button>`,
+            `<button class="real-rank-row" data-region="${r.region_id}" aria-label="查看${esc(r.name_zh)}"><span>${esc(r.name_zh)}</span><span class="rank-track"><i style="width:${(Math.abs(r.delta) / max) * 100}%;background:${r.delta < 0 ? "#aa5a31" : "#7851a9"}"></i></span><b>${r.delta >= 0 ? "+" : ""}${r.delta.toFixed(2)}</b></button>`,
         )
         .join("") +
       "</div>";

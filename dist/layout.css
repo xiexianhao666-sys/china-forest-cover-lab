@@ -1,0 +1,327 @@
+/* Layout owns sizing and placement; shell.css retains the user's visual shell. */
+.workspace,
+main.auth-shown .workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1.18fr) minmax(560px, 1fr);
+  gap: 24px;
+  height: auto;
+  min-height: 0;
+  overflow: visible;
+  padding: 18px 0 8px;
+  align-items: start;
+}
+.map-stage {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  position: sticky;
+  top: 18px;
+}
+.map-stage > .map-heading,
+.map-stage > .map-annotation,
+.map-stage > .map-layer,
+.map-stage > .map-bottom,
+.map-stage > .playback-panel,
+.map-stage > .map-footnote {
+  position: relative;
+  inset: auto;
+  margin: 0;
+  width: 100%;
+  max-width: none;
+  order: initial;
+}
+.map-stage > .map-heading {
+  padding: 0 0 0 12px;
+  border-left-color: #20704e;
+}
+.map-stage > .map-annotation {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px 20px;
+  padding: 12px 14px;
+  min-width: 0;
+  box-shadow: none;
+  border-radius: 10px;
+  background: #eff6f1;
+  border-color: #d4e4d9;
+}
+.map-annotation > strong,
+.map-annotation > div,
+.map-annotation small {
+  margin: 0;
+}
+.map-annotation small {
+  display: block;
+}
+.map-annotation > div {
+  gap: 8px;
+}
+.map-stage > .map-layer {
+  flex: none;
+  aspect-ratio: 714 / 523;
+  height: auto;
+  min-height: 0;
+  background: #f8faf9;
+  border-radius: 10px;
+  box-shadow: 0 0 0 1px #d4dfdc;
+}
+.map-layer::after {
+  box-shadow: none;
+}
+.map-stage > .map-layer > svg {
+  width: 100%;
+  height: 100%;
+}
+.map-stage > .map-bottom {
+  padding: 0;
+  border: 0;
+  background: none;
+}
+.map-bottom .map-legend {
+  box-shadow: none;
+  border: 0;
+  padding: 4px 0;
+  background: none;
+  flex-wrap: wrap !important;
+}
+.map-stage > .playback-panel {
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: #e9f0f9;
+  border: 1px solid #ceddef;
+}
+.playback-panel .timeline {
+  max-width: none;
+}
+.map-footnote {
+  line-height: 1.6;
+}
+.map-footnote span {
+  float: none;
+}
+.map-stage > .map-footnote {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  font-size: 11px;
+  padding: 0;
+}
+.workspace .analysis-dock {
+  position: static;
+  inset: auto;
+  width: auto;
+  min-width: 0;
+  max-height: none;
+  overflow: visible;
+  padding: 0;
+  border: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: start;
+  gap: 18px;
+}
+.analysis-dock #trendPanel {
+  grid-column: 1 / -1;
+  --panel-accent: #2868bc;
+  --panel-tint: #eef4fd;
+}
+.analysis-dock #compositionPanel {
+  --panel-accent: #20704e;
+  --panel-tint: #edf5ed;
+}
+.analysis-dock #rankingPanel {
+  --panel-accent: #7851a9;
+  --panel-tint: #f4eff9;
+}
+.analysis-dock #comparison {
+  grid-column: 1 / -1;
+  --panel-accent: #b16b25;
+  --panel-tint: #fbf3e8;
+}
+.analysis-dock .api-details {
+  grid-column: 1 / -1;
+  --panel-accent: #596b78;
+  --panel-tint: #edf1f4;
+}
+.workspace .analysis-dock details,
+.workspace .analysis-dock details[open] {
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  border-top: 3px solid var(--panel-accent);
+  background: var(--panel-tint) !important;
+  border-radius: 0 0 10px 10px;
+}
+.workspace .analysis-dock summary {
+  padding: 11px 14px !important;
+  font-size: 14px !important;
+  letter-spacing: 0.02em;
+  color: var(--panel-accent) !important;
+  border: 0;
+}
+.workspace .analysis-dock .panel-content {
+  padding: 0 12px 12px;
+}
+.plot-toolbar {
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.plot-toolbar > span {
+  font-size: 12px;
+}
+.workspace #trend svg {
+  width: 100%;
+  height: auto;
+  max-height: 245px;
+}
+.workspace #trend svg > rect:first-of-type {
+  fill: #f7faff;
+}
+.workspace #trend svg > line {
+  stroke: #d5e1f2;
+}
+.workspace .share-pie {
+  width: 100%;
+  max-height: 270px;
+}
+.workspace #composition svg,
+.workspace .share-pie path {
+  transform-origin: 160px 105px;
+}
+.workspace #composition svg text {
+  fill: #263c32;
+}
+.workspace .real-ranking {
+  max-height: 245px;
+}
+.workspace .real-rank-row {
+  grid-template-columns: minmax(66px, 1fr) minmax(36px, 0.8fr) 44px;
+  border-radius: 0;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid #e2d9ed;
+  box-shadow: none;
+  padding: 9px 2px;
+}
+.workspace .rank-track {
+  background: #e6ddef;
+}
+.workspace .compare-maps {
+  gap: 14px;
+}
+.workspace .compare-maps > div {
+  min-width: 0;
+  background: #fffdf8;
+  border: 1px solid #e8dac2;
+  border-radius: 8px;
+  padding: 8px 4px;
+}
+.workspace .compare-maps > div > strong {
+  color: #8e581e;
+  font-size: 14px;
+}
+.workspace .compare-maps svg {
+  width: 100%;
+  height: auto;
+  max-height: none;
+}
+.workspace .compare-legend {
+  padding: 8px 0 0;
+  font-size: 11px;
+}
+.workspace.dock-hidden {
+  grid-template-columns: minmax(0, 1fr);
+}
+.workspace.dock-hidden .map-stage {
+  width: min(100%, 1200px);
+  margin: auto;
+}
+.workspace > .playback-panel {
+  position: static;
+  inset: auto;
+  grid-column: 2;
+  width: 100%;
+  margin: 0;
+  order: 0;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: #e9f0f9;
+  border: 1px solid #ceddef;
+}
+.workspace.dock-hidden > .playback-panel {
+  grid-column: 1;
+}
+@media (max-width: 1250px) {
+  .workspace,
+  main.auth-shown .workspace {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 22px;
+  }
+  .map-stage {
+    position: static;
+  }
+  .workspace > .playback-panel {
+    grid-column: 1;
+    grid-row: 2;
+  }
+  .workspace .analysis-dock {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .analysis-dock #trendPanel {
+    grid-column: 1 / -1;
+  }
+  .workspace #trend svg {
+    max-height: 370px;
+  }
+  .workspace .share-pie {
+    max-height: 340px;
+  }
+}
+@media (max-width: 600px) {
+  main {
+    margin: 0 8px 12px;
+    padding: 10px;
+  }
+  .site-header {
+    padding: 0 16px;
+  }
+  .workspace .analysis-dock {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .map-stage {
+    gap: 10px;
+  }
+  .map-stage > .map-annotation {
+    gap: 6px 14px;
+    padding: 10px;
+  }
+  .map-annotation b {
+    font-size: 18px;
+  }
+  .data-notice {
+    flex-wrap: wrap;
+    gap: 6px 10px;
+  }
+  .data-notice strong {
+    white-space: nowrap;
+  }
+  .data-notice a {
+    margin-left: 0;
+  }
+  .workspace #trend svg {
+    min-height: 180px;
+  }
+  .workspace .compare-maps {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .auth-fields {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  #trend path.tl-line:not(.cmp) {
+    stroke-dashoffset: 0;
+  }
+}

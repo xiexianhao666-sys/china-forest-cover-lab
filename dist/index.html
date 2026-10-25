@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>中国森林类面积查询</title><meta name="description" content="通过NASA AppEEARS提取MCD12Q1真实分类产品，查看全国研究范围的森林类分布和年度面积统计。非官方森林覆盖率。"><link rel="stylesheet" href="style.css"><link rel="stylesheet" href="auth.css"><link rel="stylesheet" href="shell.css"></head>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>中国森林类面积查询</title><meta name="description" content="通过NASA AppEEARS提取MCD12Q1真实分类产品，查看全国研究范围的森林类分布和年度面积统计。非官方森林覆盖率。"><link rel="stylesheet" href="style.css"><link rel="stylesheet" href="auth.css"><link rel="stylesheet" href="shell.css"><link rel="stylesheet" href="layout.css"></head>
 <body>
 <header class="site-header"><div><h1>中国森林覆盖变化查询</h1><span class="edition">研究样品 · 非政府网站</span></div><nav aria-label="页面工具"><button id="sourceBtn">数据说明</button><button id="exportBtn">导出数据</button></nav></header>
 <main>
@@ -12,16 +12,20 @@
 <div class="data-notice"><span class="demo-tag">演示数据</span>地图与图表均为合成值，未接入实际观测数据。<span class="notice-date">2026年度数据未接入</span></div>
 <div id="authHost" hidden></div>
 <section class="workspace" id="overview" aria-label="森林覆盖地图与分析">
+<div class="map-stage">
 <div class="map-heading"><h2 id="mapTitle">森林覆盖比例</h2><p id="mapSubtitle"></p></div>
 <div class="map-annotation" aria-label="所选区域指标"><strong id="regionTitle">全国</strong><div><span>覆盖比例</span><b id="rate"></b></div><div><span>期间变化</span><b id="delta"></b></div><small id="deltaNote"></small></div>
 <div id="map" class="map-layer"></div>
+
+<div class="map-bottom"><div class="map-legend" id="mapLegend"></div></div>
+<div class="map-footnote">省级统计示意 · 点击省份查看详情<span>合成演示，不用于研究结论</span></div>
+</div>
 <aside class="analysis-dock" id="analysisDock" aria-label="图内分析面板">
 <details id="trendPanel" open><summary>年度趋势<span class="collapse-symbol" aria-hidden="true"></span></summary><div class="panel-content"><div class="plot-toolbar"><span id="trendSubtitle"></span><button id="chartExport" title="导出SVG趋势图">导出图</button></div><div id="trend"></div><div class="plot-caption"><span class="line-key"></span>年度值 <span class="interval-key"></span>查询时段</div></div></details>
 <details id="rankingPanel"><summary>区域变化比较<span class="collapse-symbol" aria-hidden="true"></span></summary><div class="panel-content"><div class="plot-toolbar"><span id="rankingPeriod"></span><label>排序<select id="sort"><option value="desc">从高到低</option><option value="asc">从低到高</option></select></label></div><div id="ranking"></div><p class="panel-note">显示前8个区域；点击图中区域可联动查询。</p></div></details>
 <details id="comparison"><summary>两期空间对比<span class="collapse-symbol" aria-hidden="true"></span></summary><div class="panel-content"><div class="compare-maps"><div><strong id="compareStart"></strong><div id="miniStart"></div></div><div><strong id="compareEnd"></strong><div id="miniEnd"></div></div></div><div class="compare-legend">覆盖比例（%）<span>0<i class="rate-gradient"></i>100</span></div><p class="panel-note">两期使用相同色阶 · 合成演示</p></div></details>
 </aside>
-<div class="map-bottom"><div class="map-legend" id="mapLegend"></div></div><section class="playback-panel" id="playbackPanel" aria-label="年份播放"><div class="playback-heading"><strong>年份播放</strong><span>逐年演示</span></div><div class="timeline"><button id="playBtn" aria-label="播放年份">▶</button><span id="sliderStart">2000</span><input id="yearSlider" type="range" min="2000" max="2025" value="2025" aria-label="地图年份"><strong id="sliderYear">2025</strong></div><p>动画过渡 · 年度值保持不变</p></section>
-<div class="map-footnote">省级统计示意 · 点击省份查看详情<span>合成演示，不用于研究结论</span></div>
+<section class="playback-panel" id="playbackPanel" aria-label="年份播放"><div class="playback-heading"><strong>年份播放</strong><span>逐年演示</span></div><div class="timeline"><button id="playBtn" aria-label="播放年份">▶</button><span id="sliderStart">2000</span><input id="yearSlider" type="range" min="2000" max="2025" value="2025" aria-label="地图年份"><strong id="sliderYear">2025</strong></div><p>动画过渡 · 年度值保持不变</p></section>
 </section>
 </main>
 <footer><span>森林资源调查 · 交互样品 v0.3</span><span>变化单位：百分点　|　演示年份：1990—2025</span></footer>
